@@ -69,34 +69,87 @@
     ]
   },
   "teamSection": {
-    "title": "Meet the Team",
-    "subtitle": "The dedicated students and engineers designing the future of racing.",
+    "title": "Engineering Roster",
+    "subtitle": "Interactive telemetry field. Hover over nodes to analyze team member engineering specs.",
     "members": [
       {
+        "id": 1,
         "name": "Alex Mercer",
         "role": "Team Captain & Chassis Lead",
-        "bio": "Mechanical engineering senior focused on structural optimization.",
-        "avatarEmoji": "👤",
-        "github": "https://github.com",
-        "linkedin": "https://linkedin.com"
+        "subTeam": "Chassis",
+        "majorYear": "Mechanical Engineering / Sr.",
+        "contribution": "Optimized structural monocoque torsional stiffness via FEA",
+        "image": ""
       },
       {
+        "id": 2,
         "name": "Sarah Chen",
         "role": "Aerodynamics Lead",
-        "bio": "Aerospace engineer designing active wing profiles and airflow CFD.",
-        "avatarEmoji": "👤",
-        "github": "https://github.com",
-        "linkedin": "https://linkedin.com"
+        "subTeam": "Aero",
+        "majorYear": "Aerospace Engineering / Sr.",
+        "contribution": "Designed active DRS wing profiles and mapped CFD ground effects",
+        "image": ""
       },
       {
+        "id": 3,
         "name": "David Miller",
-        "role": "Electronics & Telemetry Lead",
-        "bio": "Computer engineer building live dashboard telematics systems.",
-        "avatarEmoji": "👤",
-        "github": "https://github.com",
-        "linkedin": "https://linkedin.com"
+        "role": "Electronics Lead",
+        "subTeam": "Electronics",
+        "majorYear": "Computer Engineering / Jr.",
+        "contribution": "Built high-speed CAN-bus telemetry nodes and dashboard firmware",
+        "image": ""
+      },
+      {
+        "id": 4,
+        "name": "Jane Doe",
+        "role": "Suspension Designer",
+        "subTeam": "Chassis",
+        "majorYear": "Mechanical Engineering / So.",
+        "contribution": "Optimized bellcrank kinematics for progressive shock rate",
+        "image": ""
+      },
+      {
+        "id": 5,
+        "name": "Liam Connor",
+        "role": "Powertrain Lead",
+        "subTeam": "Powertrain",
+        "majorYear": "Mechanical Engineering / Sr.",
+        "contribution": "Designed custom carbon fibre intake runner and tuned ECU map",
+        "image": ""
+      },
+      {
+        "id": 6,
+        "name": "Emma Watson",
+        "role": "CFD Analyst",
+        "subTeam": "Aero",
+        "majorYear": "Aerospace Engineering / Jr.",
+        "contribution": "Simulated front wing vortex shed for radiator duct intake optimization",
+        "image": ""
+      },
+      {
+        "id": 7,
+        "name": "Marcus Aurelius",
+        "role": "Battery Pack Architect",
+        "subTeam": "Electronics",
+        "majorYear": "Electrical Engineering / Sr.",
+        "contribution": "Designed 400V accumulator cooling plates and BMS firmware",
+        "image": ""
       }
-    ]
+    ],
+    "rosterSettings": {
+      "canvasWidth": 1000,
+      "canvasHeight": 550,
+      "chargeStrength": -280,
+      "collisionRadius": 50,
+      "gravityStrengthX": 0.15,
+      "gravityStrengthY": 0.15,
+      "subTeamSettings": {
+        "Chassis": { "color": "#ef4444", "glowColor": "rgba(239, 68, 68, 0.4)", "centerX": 250, "centerY": 275 },
+        "Aero": { "color": "#3b82f6", "glowColor": "rgba(59, 130, 246, 0.4)", "centerX": 500, "centerY": 150 },
+        "Electronics": { "color": "#10b981", "glowColor": "rgba(16, 185, 129, 0.4)", "centerX": 750, "centerY": 275 },
+        "Powertrain": { "color": "#eab308", "glowColor": "rgba(234, 179, 8, 0.4)", "centerX": 500, "centerY": 400 }
+      }
+    }
   },
   "authUi": {
     "loginTitle": "Sponsor Portal",
