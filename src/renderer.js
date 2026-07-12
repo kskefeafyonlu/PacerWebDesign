@@ -1,6 +1,8 @@
 import { signIn, signUp, signOut, isSupabaseConfigured } from './auth'
-import { initRosterSimulation, updateRosterPhysics } from './roster'
+import { initRosterSimulation, updateRosterPhysics, updateEcuMode } from './roster'
 import { initScrollTelemetry } from './scroll'
+import { initTelemetryTicker, initSponsorCalculator, initComponentTree } from './telemetry'
+
 
 
 
@@ -254,7 +256,96 @@ function renderTeam(teamConfig) {
 }
 
 /**
+ * Renders the ECU Drive Mode Switcher Dial
+ * @param {object} ecuConfig 
+ */
+function renderEcuModes(ecuConfig) {
+  const panel = document.createElement('div')
+  panel.className = 'ecu-modes-panel'
+  panel.innerHTML = `
+    <div class="ecu-dial-container">
+      <span class="ecu-dial-title">MAP SELECTOR</span>
+      <div class="ecu-dial" id="ecu-rotary-dial">
+        <div class="dial-indicator"></div>
+      </div>
+    </div>
+    <div class="ecu-modes-list">
+      ${ecuConfig.modes.map(mode => `
+        <button id="btn-ecu-${mode.id}" class="btn-ecu-mode" data-mode="${mode.id}">
+          <span class="mode-led"></span>
+          <span class="mode-label">${mode.label}</span>
+        </button>
+      `).join('')}
+    </div>
+  `
+
+  setTimeout(() => {
+    const dial = document.getElementById('ecu-rotary-dial')
+    const buttons = document.querySelectorAll('.btn-ecu-mode')
+
+    const setMode = (modeId) => {
+      const mode = ecuConfig.modes.find(m => m.id === modeId)
+      if (!mode) return
+
+      buttons.forEach(btn => {
+        if (btn.getAttribute('data-mode') === modeId) {
+          btn.classList.add('active')
+        } else {
+          btn.classList.remove('active')
+        }
+      })
+
+      if (dial) {
+        let rotation = 0
+        if (modeId === 'endurance') rotation = 0
+        if (modeId === 'qualifying') rotation = 45
+        if (modeId === 'wet') rotation = -45
+        dial.style.transform = `rotate(${rotation}deg)`
+      }
+
+      document.body.className = document.body.className.replace(/\bmode-\S+/g, '')
+      document.body.classList.add(`mode-${modeId}`)
+
+      let rainContainer = document.getElementById('rain-particles')
+      if (modeId === 'wet') {
+        if (!rainContainer) {
+          rainContainer = document.createElement('div')
+          rainContainer.id = 'rain-particles'
+          rainContainer.className = 'rain-particles'
+          for (let i = 0; i < 45; i++) {
+            const drop = document.createElement('span')
+            drop.style.left = `${Math.random() * 100}%`
+            drop.style.animationDelay = `${Math.random() * 2}s`
+            drop.style.animationDuration = `${0.5 + Math.random() * 0.5}s`
+            rainContainer.appendChild(drop)
+          }
+          document.body.appendChild(rainContainer)
+        } else {
+          rainContainer.style.display = 'block'
+        }
+      } else if (rainContainer) {
+        rainContainer.style.display = 'none'
+      }
+
+      updateEcuMode(mode)
+    }
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const modeId = btn.getAttribute('data-mode')
+        setMode(modeId)
+      })
+    })
+
+    setMode(ecuConfig.defaultMode || 'endurance')
+  }, 100)
+
+  return panel
+}
+
+/**
  * Renders the Contact form Component
+
  * @param {object} contactConfig 
  */
 function renderContact(contactConfig) {
@@ -674,6 +765,12 @@ export function renderApp(config, user) {
   const header = renderHeader(config.header, user)
   appContainer.appendChild(header)
 
+  // Render Live Telemetry Ticker globally (below header)
+  const tickerContainer = document.createElement('div')
+  tickerContainer.id = 'global-telemetry-ticker'
+  appContainer.appendChild(tickerContainer)
+  initTelemetryTicker(tickerContainer)
+
   // 4. Create the main viewport container
   const main = document.createElement('main')
   main.className = 'main-content single-view'
@@ -689,14 +786,40 @@ export function renderApp(config, user) {
     // Clear viewport
     main.innerHTML = ''
 
+    // Clear dynamic subview intervals
+    const oldTicker = document.getElementById('global-telemetry-ticker')
+    if (viewName !== 'roster' && oldTicker && oldTicker.__telemetryInterval) {
+      clearInterval(oldTicker.__telemetryInterval)
+      oldTicker.innerHTML = ''
+    } else if (viewName === 'roster' && oldTicker && !oldTicker.innerHTML) {
+      initTelemetryTicker(oldTicker)
+    }
+
     // Render subview
     if (viewName === 'roster') {
       const team = renderTeam(config.teamSection)
       main.appendChild(team)
 
+      // Mount ECU Mode Switcher (dial)
+      const ecuPanel = renderEcuModes(config.ecuSettings)
+      const canvas = team.querySelector('#roster-canvas')
+      team.insertBefore(ecuPanel, canvas)
+
       // Append ECU physics tuner to main
       const tuner = renderEcuTuner(config.teamSection.rosterSettings)
       main.appendChild(tuner)
+
+      // Mount Sponsor Impact Simulator panel
+      const calcContainer = document.createElement('div')
+      calcContainer.id = 'sponsor-simulator-hud'
+      main.appendChild(calcContainer)
+      initSponsorCalculator(calcContainer)
+
+      // Mount Carbon Component Tree Blueprint
+      const treeContainer = document.createElement('div')
+      treeContainer.id = 'component-tree-hud'
+      main.appendChild(treeContainer)
+      initComponentTree(treeContainer)
 
       const canvasElement = document.getElementById('roster-canvas')
       if (canvasElement) {

@@ -182,6 +182,130 @@
       "contact": "G_2"
     }
   },
+  "ecuSettings": {
+    "defaultMode": "endurance",
+    "modes": [
+      {
+        "id": "endurance",
+        "label": "ENDURANCE (MAP_E)",
+        "color": "0 0% 75%",
+        "decay": 0.65,
+        "charge": -280,
+        "vibrate": false,
+        "bgStyle": "grid"
+      },
+      {
+        "id": "qualifying",
+        "label": "QUALIFYING (MAP_Q)",
+        "color": "0 84% 60%",
+        "decay": 0.45,
+        "charge": -400,
+        "vibrate": true,
+        "bgStyle": "glow"
+      },
+      {
+        "id": "wet",
+        "label": "WET_TRACK (MAP_W)",
+        "color": "200 95% 60%",
+        "decay": 0.85,
+        "charge": -180,
+        "vibrate": false,
+        "bgStyle": "rain"
+      }
+    ]
+  },
+  "liveTelemetry": {
+    "updateInterval": 500,
+    "sensors": [
+      { "id": "tire_fl", "label": "TIRE_TEMP_FL", "min": 65, "max": 95, "unit": "°C" },
+      { "id": "tire_fr", "label": "TIRE_TEMP_FR", "min": 65, "max": 95, "unit": "°C" },
+      { "id": "steering", "label": "STEER_ANGLE", "min": -30, "max": 30, "unit": "°" },
+      { "id": "soc", "label": "ACCUM_SOC", "min": 92, "max": 99, "unit": "%", "decimals": 1 },
+      { "id": "susp_fl", "label": "SUSP_TRAVEL_FL", "min": 5, "max": 25, "unit": "mm" },
+      { "id": "susp_fr", "label": "SUSP_TRAVEL_FR", "min": 5, "max": 25, "unit": "mm" },
+      { "id": "lap_time", "label": "LAST_LAP", "min": 58.2, "max": 59.8, "unit": "s", "decimals": 2 }
+    ]
+  },
+  "sponsorImpact": {
+    "minFunding": 1000,
+    "maxFunding": 15000,
+    "defaultFunding": 1000,
+    "calculatorTitle": "Sponsor Impact Simulator",
+    "calculatorSubtitle": "Observe how your contributions directly tune racecar engineering statistics.",
+    "milestones": [
+      {
+        "funding": 1000,
+        "milestoneText": "Initial CAD tooling & custom sensor logs. Standard package.",
+        "effects": { "weight": 0, "power": 0, "laptime": 0, "topspeed": 0 }
+      },
+      {
+        "funding": 3000,
+        "milestoneText": "Enables 3D printed intake plenum and telemetry modules.",
+        "effects": { "weight": -1.5, "power": 4, "laptime": -0.15, "topspeed": 5 }
+      },
+      {
+        "funding": 6000,
+        "milestoneText": "Unlocks custom carbon-fibre layup toolings and DRS wing elements.",
+        "effects": { "weight": -5.2, "power": 4, "laptime": -0.45, "topspeed": 12 }
+      },
+      {
+        "funding": 10000,
+        "milestoneText": "Enables CFD wind-tunnel mapping and custom BMS cell battery layout.",
+        "effects": { "weight": -12.5, "power": 16, "laptime": -0.95, "topspeed": 18 }
+      },
+      {
+        "funding": 15000,
+        "milestoneText": "Full engineering support, customized telemetry, titanium uprights.",
+        "effects": { "weight": -18.2, "power": 24, "laptime": -1.35, "topspeed": 26 }
+      }
+    ]
+  },
+  "componentTree": {
+    "title": "Carbon Component Tree",
+    "subtitle": "Analyze engineering specifications of the formula racecar layout.",
+    "hotspots": [
+      {
+        "id": "front_wing",
+        "title": "Aerodynamic Front Wing",
+        "x": 10,
+        "y": 62,
+        "material": "Prepreg Carbon Fiber (3K weave)",
+        "weight": "2.8 kg",
+        "spec": "Generates 45kg of downforce at 80 km/h. Optimized flap kinematics.",
+        "sponsorCredit": "ESA Component Division"
+      },
+      {
+        "id": "monocoque",
+        "title": "Chassis Monocoque",
+        "x": 38,
+        "y": 50,
+        "material": "Carbon Fiber Honeycomb Sandwich Core",
+        "weight": "22.5 kg",
+        "spec": "Torsional stiffness of 2300 Nm/deg. Integrates cockpit safety cell.",
+        "sponsorCredit": "Example Sponsor B"
+      },
+      {
+        "id": "accumulator",
+        "title": "BMS Accumulator Pack",
+        "x": 62,
+        "y": 50,
+        "material": "CNC machined Aluminium 6061-T6 casing",
+        "weight": "48.2 kg",
+        "spec": "400V pouch cell system, capacity 6.5 kWh. Liquid cooling plates.",
+        "sponsorCredit": "Marcus battery logistics"
+      },
+      {
+        "id": "rear_wing",
+        "title": "DRS Wing Assembly",
+        "x": 88,
+        "y": 32,
+        "material": "Autoclave cured Carbon Fiber, Coremat core",
+        "weight": "3.5 kg",
+        "spec": "Pneumatic DRS actuator. Reduces wing drag by 25% on straight lines.",
+        "sponsorCredit": "Sarah Aerodynamics Lab"
+      }
+    ]
+  },
   "footer": {
     "copyright": "© 2026 EGEPACERS. All rights reserved.",
     "links": [

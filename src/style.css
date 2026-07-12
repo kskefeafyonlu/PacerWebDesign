@@ -1058,5 +1058,513 @@ section {
   color: #e5e5e5;
 }
 
+/* ECU Driving Mode Theme Overrides */
+body.mode-qualifying {
+  --color-primary: 0 84% 60%;
+}
+body.mode-wet {
+  --color-primary: 200 95% 60%;
+}
+
+/* Engine Vibration Keyframes */
+body.mode-qualifying .node-group {
+  animation: engineVibe 0.05s infinite alternate;
+}
+@keyframes engineVibe {
+  0% { transform: translate(-0.5px, -0.5px); }
+  100% { transform: translate(0.5px, 0.5px); }
+}
+
+/* Rain Particles Overlay */
+.rain-particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 5;
+  overflow: hidden;
+}
+.rain-particles span {
+  position: absolute;
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(transparent, hsla(200, 95%, 60%, 0.4));
+  animation: rainFall 0.8s linear infinite;
+}
+@keyframes rainFall {
+  0% { transform: translateY(-100px); }
+  100% { transform: translateY(100vh); }
+}
+
+/* Telemetry Ticker styles */
+.telemetry-ticker-wrapper {
+  background-color: rgba(18, 18, 18, 0.9);
+  border-bottom: 1px solid hsl(var(--color-border));
+  padding: 8px 24px;
+  font-family: 'Space Mono', monospace;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 0.7rem;
+  z-index: 900;
+  position: relative;
+}
+
+.ticker-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: hsl(var(--color-primary));
+  font-weight: 700;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  padding-right: 15px;
+  flex-shrink: 0;
+}
+
+.ticker-dot {
+  width: 6px;
+  height: 6px;
+  background-color: hsl(var(--color-primary));
+  border-radius: 50%;
+  box-shadow: 0 0 6px hsl(var(--color-primary));
+}
+
+.ticker-dot.blinking {
+  animation: ledBlink 0.6s infinite alternate;
+}
+
+.ticker-marquee {
+  display: flex;
+  gap: 30px;
+  overflow-x: auto;
+  scrollbar-width: none; /* Hide scrollbar for clean ticker look */
+  white-space: nowrap;
+  flex-grow: 1;
+}
+
+.ticker-marquee::-webkit-scrollbar {
+  display: none;
+}
+
+.ticker-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.item-label {
+  color: #737373;
+}
+
+.item-value {
+  color: white;
+  font-weight: 700;
+}
+
+.item-value.telemetry-flicker {
+  color: #ef4444;
+  text-shadow: 0 0 4px rgba(239, 68, 68, 0.5);
+  animation: ledBlink 0.1s infinite alternate;
+}
+
+.item-unit {
+  color: #a3a3a3;
+  font-size: 0.65rem;
+}
+
+/* ECU rotary switch panel */
+.ecu-modes-panel {
+  background-color: rgba(22, 22, 22, 0.6);
+  border: 1px dashed hsl(var(--color-border));
+  border-radius: var(--radius-md);
+  padding: 15px 24px;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin: 20px auto;
+  max-width: var(--max-width);
+  font-family: 'Space Mono', monospace;
+}
+
+.ecu-dial-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.ecu-dial-title {
+  font-size: 0.55rem;
+  color: #737373;
+  font-weight: 700;
+}
+
+.ecu-dial {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #2e2e2e 40%, #171717 100%);
+  border: 2.5px solid #404040;
+  position: relative;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
+
+.dial-indicator {
+  position: absolute;
+  width: 3px;
+  height: 18px;
+  background-color: hsl(var(--color-primary));
+  box-shadow: 0 0 6px hsl(var(--color-primary));
+  top: 4px;
+  left: calc(50% - 1.5px);
+  border-radius: 1.5px;
+}
+
+.ecu-modes-list {
+  display: flex;
+  gap: 15px;
+  flex-grow: 1;
+}
+
+.btn-ecu-mode {
+  flex-grow: 1;
+  background-color: rgba(18, 18, 18, 0.8);
+  border: 1px solid hsl(var(--color-border));
+  color: #737373;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: var(--transition-smooth);
+}
+
+.btn-ecu-mode:hover {
+  border-color: #525252;
+  color: #a3a3a3;
+}
+
+.btn-ecu-mode .mode-led {
+  width: 6px;
+  height: 6px;
+  background-color: #2e2e2e;
+  border-radius: 50%;
+  transition: var(--transition-smooth);
+}
+
+.btn-ecu-mode.active {
+  color: white;
+  border-color: hsl(var(--color-primary));
+  box-shadow: 0 0 12px hsla(var(--color-primary), 0.15);
+  background-color: rgba(18, 18, 18, 0.95);
+}
+
+#btn-ecu-endurance.active .mode-led {
+  background-color: #a3a3a3;
+  box-shadow: 0 0 6px #a3a3a3;
+}
+
+#btn-ecu-qualifying.active .mode-led {
+  background-color: #ef4444;
+  box-shadow: 0 0 8px #ef4444;
+}
+
+#btn-ecu-wet.active .mode-led {
+  background-color: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+}
+
+/* Sponsor Calculator HUD */
+.sponsor-simulator-container {
+  background-color: rgba(22, 22, 22, 0.95);
+  border: 1px solid hsl(var(--color-border));
+  border-radius: var(--radius-lg);
+  padding: 30px;
+  margin: 30px auto;
+  max-width: var(--max-width);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  font-family: 'Space Mono', monospace;
+}
+
+.sim-header {
+  margin-bottom: 20px;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+  padding-bottom: 12px;
+}
+
+.sim-header h3 {
+  font-size: 1.1rem;
+  color: white;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.sim-header p {
+  font-size: 0.75rem;
+  color: #737373;
+}
+
+.sim-controls {
+  margin-bottom: 20px;
+}
+
+.funding-slider-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 0.8rem;
+}
+
+.funding-label {
+  color: #a3a3a3;
+}
+
+.funding-val {
+  color: hsl(var(--color-primary));
+  font-weight: 700;
+  text-shadow: 0 0 8px hsla(var(--color-primary), 0.3);
+}
+
+.sim-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #2e2e2e;
+  outline: none;
+}
+
+.sim-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: hsl(var(--color-primary));
+  cursor: pointer;
+  box-shadow: 0 0 10px hsla(var(--color-primary), 0.8);
+  border: 2px solid white;
+}
+
+.sim-milestone-desc {
+  background-color: rgba(18, 18, 18, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-left: 3px solid hsl(var(--color-primary));
+  padding: 12px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  color: #d4d4d4;
+  margin-bottom: 25px;
+  line-height: 1.5;
+}
+
+.milestone-bracket {
+  color: hsl(var(--color-primary));
+  font-weight: 700;
+  margin-right: 5px;
+}
+
+.sim-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.sim-stat-card {
+  background-color: rgba(18, 18, 18, 0.5);
+  border: 1px solid hsl(var(--color-border));
+  border-radius: var(--radius-md);
+  padding: 15px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sim-stat-card.text-highlight {
+  border-color: hsla(var(--color-primary), 0.3);
+  background-color: hsla(var(--color-primary), 0.02);
+}
+
+.stat-lbl {
+  font-size: 0.6rem;
+  color: #737373;
+}
+
+.stat-num {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: white;
+}
+
+.sim-stat-card.text-highlight .stat-num {
+  color: hsl(var(--color-primary));
+}
+
+.stat-progress-bar {
+  height: 3px;
+  background-color: #262626;
+  border-radius: 1.5px;
+  overflow: hidden;
+}
+
+.stat-progress-bar span {
+  display: block;
+  height: 100%;
+  background-color: hsl(var(--color-primary));
+  border-radius: 1.5px;
+  transition: width 0.3s ease-out;
+}
+
+/* Blueprint Component Tree */
+.component-tree-section {
+  max-width: var(--max-width);
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.blueprint-canvas-wrapper {
+  position: relative;
+  background-color: rgba(22, 22, 22, 0.95);
+  border: 1px solid hsl(var(--color-border));
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border-top: 3px solid hsl(var(--color-primary));
+}
+
+.blueprint-schematic {
+  position: relative;
+  width: 100%;
+  height: auto;
+  background: radial-gradient(circle, rgba(18, 18, 18, 0.2) 60%, rgba(10, 10, 10, 0.8) 100%);
+}
+
+.blueprint-svg {
+  width: 100%;
+  height: auto;
+  max-height: 350px;
+  display: block;
+}
+
+.blueprint-hotspot {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 10;
+}
+
+.hotspot-inner {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: hsl(var(--color-primary));
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 1.5px solid white;
+  transition: var(--transition-smooth);
+}
+
+.hotspot-pulse {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid hsl(var(--color-primary));
+  border-radius: 50%;
+  top: 0;
+  left: 0;
+  animation: pulseGlow 1.5s infinite;
+  pointer-events: none;
+}
+
+@keyframes pulseGlow {
+  0% { transform: scale(0.6); opacity: 1; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+.blueprint-hotspot:hover .hotspot-inner,
+.blueprint-hotspot.active .hotspot-inner {
+  background-color: white;
+  transform: translate(-50%, -50%) scale(1.3);
+  box-shadow: 0 0 12px hsl(var(--color-primary));
+}
+
+.blueprint-details-hud {
+  margin-top: 20px;
+  background-color: rgba(18, 18, 18, 0.9);
+  border: 1px solid hsl(var(--color-border));
+  border-radius: var(--radius-md);
+  padding: 20px;
+  font-family: 'Space Mono', monospace;
+  opacity: 0.6;
+  transform: translateY(5px);
+  transition: var(--transition-smooth);
+}
+
+.hud-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hud-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+  padding-bottom: 8px;
+  margin-bottom: 4px;
+}
+
+#bp-hud-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: white;
+  letter-spacing: 0.02em;
+}
+
+.bp-hud-weight {
+  font-size: 0.7rem;
+  background-color: #262626;
+  color: hsl(var(--color-primary));
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+}
+
+.hud-label-row {
+  display: flex;
+  font-size: 0.7rem;
+  gap: 10px;
+  line-height: 1.4;
+}
+
+.hud-lbl {
+  color: #737373;
+  width: 140px;
+  flex-shrink: 0;
+}
+
+#bp-hud-material, #bp-hud-spec {
+  color: #e5e5e5;
+}
+
+.bp-hud-credit {
+  color: hsl(var(--color-primary));
+  font-weight: 700;
+}
+
+
 
 

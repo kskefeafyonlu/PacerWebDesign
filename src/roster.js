@@ -232,7 +232,16 @@ export function initRosterSimulation(container, members, settings) {
 
   // Update simulation coordinates on ticks
   simulation.on('tick', () => {
-    nodeGroups.attr('transform', d => `translate(${d.x}, ${d.y})`)
+    nodeGroups.attr('transform', d => {
+      let x = d.x
+      let y = d.y
+      if (window.__ecuVibrate) {
+        // High frequency micro-shiver to simulate engine idle vibration
+        x += (Math.random() - 0.5) * 1.2
+        y += (Math.random() - 0.5) * 1.2
+      }
+      return `translate(${x}, ${y})`
+    })
   })
 
   // Mouse-driven G-Force simulation
@@ -345,3 +354,19 @@ export function updateRosterPhysics(newSettings) {
 
   activeSimulation.alpha(0.3).restart()
 }
+
+/**
+ * Updates the D3 simulation variables based on the active ECU drive map mode
+ * @param {object} modeSettings 
+ */
+export function updateEcuMode(modeSettings) {
+  if (!activeSimulation) return
+
+  window.__ecuVibrate = modeSettings.vibrate
+  activeSimulation.velocityDecay(modeSettings.decay)
+  activeSimulation.force('charge').strength(modeSettings.charge)
+  
+  // Re-heat simulation to transition nodes to new physics properties
+  activeSimulation.alpha(0.35).restart()
+}
+
