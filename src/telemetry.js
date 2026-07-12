@@ -413,12 +413,12 @@ export function initTrackSimulator(container) {
   }
 
   function triggerSimulation() {
-    const loader = document.getElementById('track-sim-loader')
-    const progressBar = document.getElementById('loader-progress-bar')
-    const statLap = document.getElementById('sim-stat-lap')
-    const statVel = document.getElementById('sim-stat-vel')
-    const statTemp = document.getElementById('sim-stat-temp')
-    const statGrip = document.getElementById('sim-stat-grip')
+    const loader = container.querySelector('#track-sim-loader')
+    const progressBar = container.querySelector('#loader-progress-bar')
+    const statLap = container.querySelector('#sim-stat-lap')
+    const statVel = container.querySelector('#sim-stat-vel')
+    const statTemp = container.querySelector('#sim-stat-temp')
+    const statGrip = container.querySelector('#sim-stat-grip')
 
     if (!loader || !progressBar) return
 
@@ -448,11 +448,11 @@ export function initTrackSimulator(container) {
     const activeModeId = document.body.className.match(/mode-(\w+)/)?.[1] || 'endurance'
     const simData = activeTrack.simulationData[activeModeId]
 
-    const forecastTrackName = document.getElementById('forecast-track-name')
-    const statLap = document.getElementById('sim-stat-lap')
-    const statVel = document.getElementById('sim-stat-vel')
-    const statTemp = document.getElementById('sim-stat-temp')
-    const statGrip = document.getElementById('sim-stat-grip')
+    const forecastTrackName = container.querySelector('#forecast-track-name')
+    const statLap = container.querySelector('#sim-stat-lap')
+    const statVel = container.querySelector('#sim-stat-vel')
+    const statTemp = container.querySelector('#sim-stat-temp')
+    const statGrip = container.querySelector('#sim-stat-grip')
 
     if (forecastTrackName) forecastTrackName.textContent = activeTrack.name
     if (statLap && simData) statLap.textContent = simData.predictedLap
@@ -463,10 +463,10 @@ export function initTrackSimulator(container) {
 
   function initializeAnimation() {
     const activeTrack = trackConfig.tracks[activeTrackIndex]
-    const path = document.getElementById('sim-track-path')
-    const carGroup = document.getElementById('sim-car-group')
-    const speedReadout = document.getElementById('track-speed-readout')
-    const lapReadout = document.getElementById('track-lap-count')
+    const path = container.querySelector('#sim-track-path')
+    const carGroup = container.querySelector('#sim-car-group')
+    const speedReadout = container.querySelector('#track-speed-readout')
+    const lapReadout = container.querySelector('#track-lap-count')
 
     if (!path || !carGroup) return
 
@@ -476,9 +476,9 @@ export function initTrackSimulator(container) {
 
     const animate = () => {
       // Safety checks in case elements are unmounted or active track index changed
-      const currentPath = document.getElementById('sim-track-path')
+      const currentPath = container.querySelector('#sim-track-path')
       if (!currentPath || currentPath.getAttribute('data-track-id') !== activeTrack.id) return
-      if (!document.getElementById('sim-car-group')) return
+      if (!container.querySelector('#sim-car-group')) return
 
       // Get active mode base speed factor
       const activeModeId = document.body.className.match(/mode-(\w+)/)?.[1] || 'endurance'

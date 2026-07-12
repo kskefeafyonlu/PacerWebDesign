@@ -1437,23 +1437,29 @@ body.mode-qualifying .node-group {
   background-color: rgba(22, 22, 22, 0.95);
   border: 1px solid hsl(var(--color-border));
   border-radius: var(--radius-lg);
-  padding: 20px;
-  overflow: hidden;
+  padding: 25px;
+  height: 550px; /* Fixed height on desktop to prevent jumping / resizing layouts on hover */
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   border-top: 3px solid hsl(var(--color-primary));
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .blueprint-schematic {
   position: relative;
   width: 100%;
-  height: auto;
+  height: 300px; /* Fixed height on desktop */
   background: radial-gradient(circle, rgba(18, 18, 18, 0.2) 60%, rgba(10, 10, 10, 0.8) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .blueprint-svg {
   width: 100%;
-  height: auto;
-  max-height: 350px;
+  height: 100%; /* Fill the fixed 300px height container completely! */
+  max-height: 300px;
   display: block;
 }
 
@@ -2072,10 +2078,22 @@ body.mode-qualifying .node-group {
 
   .blueprint-canvas-wrapper {
     padding: 10px;
+    height: auto; /* Allow dynamic height on mobile to prevent overflow */
+  }
+
+  .blueprint-schematic {
+    height: auto;
+  }
+
+  .blueprint-svg {
+    height: auto;
+    max-height: 220px;
   }
 
   .blueprint-details-hud {
     padding: 12px;
+    height: auto; /* Dynamic height on mobile is fine */
+    min-height: 175px;
   }
 
   .hud-label-row {
