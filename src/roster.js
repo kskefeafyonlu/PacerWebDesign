@@ -73,6 +73,30 @@ export function initRosterSimulation(container, members, settings) {
     document.body.appendChild(statCard)
   }
 
+  // Setup g-force HUD container (floating relative to canvas)
+  let gforceHud = document.getElementById('roster-gforce-hud')
+  if (!gforceHud) {
+    gforceHud = document.createElement('div')
+    gforceHud.id = 'roster-gforce-hud'
+    gforceHud.className = 'gforce-hud'
+    gforceHud.innerHTML = `
+      <div class="gforce-reticle">
+        <span class="gforce-ring ring-1"></span>
+        <span class="gforce-ring ring-2"></span>
+        <span class="gforce-crosshair-h"></span>
+        <span class="gforce-crosshair-v"></span>
+        <span id="gforce-dot" class="gforce-dot"></span>
+      </div>
+      <div class="gforce-readout"><span id="gforce-val">0.0</span> G</div>
+    `
+    container.appendChild(gforceHud)
+  }
+
+  let dotX = 0
+  let dotY = 0
+  let targetGForceX = 0
+  let targetGForceY = 0
+
   // Define force simulation
   const simulation = d3.forceSimulation(members)
     .velocityDecay(0.65) // Add damping to reduce shivering and settle nodes quickly
@@ -232,6 +256,34 @@ export function initRosterSimulation(container, members, settings) {
   // Update simulation coordinates on ticks
   simulation.on('tick', () => {
     nodeGroups.attr('transform', d => `translate(${d.x}, ${d.y})`)
+    
+    // Smoothly decay target G-force back to 0 (air resistance)
+    targetGForceX *= 0.85
+    targetGForceY *= 0.85
+    
+    // Spring elastic interpolation for dotX and dotY (soft and squishy)
+    dotX += (targetGForceX - dotX) * 0.12
+    dotY += (targetGForceY - dotY) * 0.12
+    
+    const gDot = document.getElementById('gforce-dot')
+    const gVal = document.getElementById('gforce-val')
+    
+    if (gDot && gVal) {
+      const maxOffset = 13
+      let displayX = dotX * 5
+      let displayY = dotY * 5
+      const dist = Math.sqrt(displayX*displayX + displayY*displayY)
+      if (dist > maxOffset) {
+        displayX = (displayX / dist) * maxOffset
+        displayY = (displayY / dist) * maxOffset
+      }
+      
+      gDot.style.transform = `translate(${displayX}px, ${displayY}px)`
+      
+      const gMag = Math.sqrt(dotX*dotX + dotY*dotY)
+      const gValNum = Math.min(2.8, gMag * 0.12)
+      gVal.textContent = gValNum.toFixed(1)
+    }
   })
 
   // Mouse-driven G-Force simulation
@@ -239,12 +291,32 @@ export function initRosterSimulation(container, members, settings) {
   let lastMouseY = null
   d3Svg.on('mousemove', function(event) {
     const [mouseX, mouseY] = d3.pointer(event)
+    
+    // Position G-force HUD relative to mouse cursor inside canvas bounds
+    const rect = container.getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+    
+    if (gforceHud) {
+      gforceHud.style.left = `${x + 18}px`
+      gforceHud.style.top = `${y + 18}px`
+      gforceHud.style.opacity = '0.75'
+      
+      clearTimeout(window.__gforceHideTimeout)
+      window.__gforceHideTimeout = setTimeout(() => {
+        gforceHud.style.opacity = '0'
+      }, 700)
+    }
+    
     if (lastMouseX !== null && lastMouseY !== null) {
       const dx = mouseX - lastMouseX
       const dy = mouseY - lastMouseY
       const mouseSpeed = Math.sqrt(dx*dx + dy*dy)
       
       if (mouseSpeed > 4) {
+        targetGForceX = dx * 0.1
+        targetGForceY = dy * 0.1
+        
         members.forEach(node => {
           const distToMouse = Math.sqrt((node.x - mouseX)**2 + (node.y - mouseY)**2)
           const influence = Math.max(0.05, 1 - distToMouse / 500)

@@ -933,33 +933,39 @@ section {
 /* Scroll RPM Telemetry HUD Styles */
 .telemetry-scroll-hud {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 25px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 1000;
   font-family: 'Space Mono', monospace;
   pointer-events: none;
 }
 
 .hud-container {
-  background-color: rgba(22, 22, 22, 0.95);
+  background-color: rgba(18, 18, 18, 0.95);
   border: 1px solid hsl(var(--color-border));
   border-radius: var(--radius-lg);
-  padding: 15px 20px;
-  width: 260px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  padding: 10px 24px;
+  width: 480px; /* Horizontal HUD layout */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border-bottom: 2px solid hsl(var(--color-primary));
 }
 
 .hud-top {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 12px;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 0;
 }
 
 .hud-gear-container {
   display: flex;
-  flex-direction: column;
+  align-items: baseline;
+  gap: 4px;
 }
 
 .hud-gear-value {
@@ -976,21 +982,20 @@ section {
 }
 
 .hud-speed-container {
-  text-align: right;
   display: flex;
-  align-items: flex-end;
+  align-items: baseline;
   gap: 4px;
 }
 
 .hud-speed-value {
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 800;
   line-height: 1;
   color: white;
 }
 
 .hud-label {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   color: #737373;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -999,12 +1004,13 @@ section {
 .hud-tachometer {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
+  flex-grow: 1;
 }
 
 .tacho-leds {
   display: flex;
-  gap: 3px;
+  gap: 2px;
   justify-content: space-between;
 }
 
@@ -1051,3 +1057,84 @@ section {
   font-weight: 700;
   color: #e5e5e5;
 }
+
+/* G-Force Floating HUD */
+.gforce-hud {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1500;
+  width: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  font-family: 'Space Mono', monospace;
+}
+
+.gforce-reticle {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  background-color: rgba(18, 18, 18, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+.gforce-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.ring-1 {
+  width: 16px;
+  height: 16px;
+}
+
+.gforce-crosshair-h {
+  position: absolute;
+  top: 15px;
+  left: 3px;
+  right: 3px;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.gforce-crosshair-v {
+  position: absolute;
+  left: 15px;
+  top: 3px;
+  bottom: 3px;
+  width: 1px;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.gforce-dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: #ef4444; /* Racing red for the G-force dot */
+  border-radius: 50%;
+  top: 13px;
+  left: 13px;
+  box-shadow: 0 0 6px #ef4444;
+  transition: transform 0.05s ease-out;
+}
+
+.gforce-readout {
+  font-size: 0.55rem;
+  color: #a3a3a3;
+  margin-top: 4px;
+  font-weight: 700;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  letter-spacing: 0.05em;
+  background-color: rgba(18, 18, 18, 0.7);
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
