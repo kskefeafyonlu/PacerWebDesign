@@ -451,25 +451,14 @@ export function renderApp(config, user) {
   // 2. Apply dynamic colors & layout tokens
   applyTheme(config.theme)
 
-  // 3. Render and append sections
-  const header = renderHeader(config.header, user)
-  const hero = renderHero(config.hero)
-  
+  // 3. Render and append only the team roster section
   const main = document.createElement('main')
-  main.className = 'main-content'
+  main.className = 'main-content single-view'
   
-  const sponsors = renderSponsors(config.sponsorsSection)
   const team = renderTeam(config.teamSection)
-  
-  main.appendChild(hero)
-  main.appendChild(sponsors)
   main.appendChild(team)
   
-  const footer = renderFooter(config.footer)
-
-  appContainer.appendChild(header)
   appContainer.appendChild(main)
-  appContainer.appendChild(footer)
 
   // Initialize interactive roster simulation
   const canvasElement = document.getElementById('roster-canvas')
@@ -477,6 +466,6 @@ export function renderApp(config, user) {
     initRosterSimulation(canvasElement, config.teamSection.members, config.teamSection.rosterSettings)
   }
 
-  // 4. Render development warning helper if needed
+  // 4. Render development warning helper if needed (if supabase keys missing)
   renderDevNotice()
 }

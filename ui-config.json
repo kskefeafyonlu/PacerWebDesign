@@ -1,10 +1,10 @@
 {
   "theme": {
-    "primaryColor": "220 90% 56%",
-    "backgroundColor": "224 71% 4%",
-    "textColor": "210 40% 98%",
-    "cardBgColor": "224 71% 7%",
-    "borderColor": "220 14% 16%",
+    "primaryColor": "0 0% 75%",
+    "backgroundColor": "0 0% 7%",
+    "textColor": "0 0% 90%",
+    "cardBgColor": "0 0% 11%",
+    "borderColor": "0 0% 18%",
     "glassmorphism": true
   },
   "header": {

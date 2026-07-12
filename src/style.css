@@ -772,3 +772,14 @@ section {
   }
 }
 
+.main-content.single-view {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  max-width: 100%;
+}
+
+
