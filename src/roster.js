@@ -2,6 +2,24 @@ import * as d3 from 'd3'
 
 let activeSimulation = null
 
+/**
+ * Helper to dynamically compute sub-team gravity centers based on viewport width/height
+ */
+function getSubTeamCenter(subTeam, axis, width, height) {
+  if (axis === 'x') {
+    if (subTeam === 'Chassis') return width * 0.22
+    if (subTeam === 'Aero') return width * 0.5
+    if (subTeam === 'Electronics') return width * 0.78
+    if (subTeam === 'Powertrain') return width * 0.5
+    return width / 2
+  } else {
+    if (subTeam === 'Chassis') return height * 0.5
+    if (subTeam === 'Aero') return height * 0.25
+    if (subTeam === 'Electronics') return height * 0.5
+    if (subTeam === 'Powertrain') return height * 0.75
+    return height / 2
+  }
+}
 
 /**
  * Initializes and starts the D3 force-directed roster simulation
@@ -90,14 +108,13 @@ export function initRosterSimulation(container, members, settings) {
     .force('x', d3.forceX()
       .x(d => {
         if (!window.__activeSubTeamFilter || window.__activeSubTeamFilter === 'all') {
-          const teamSetting = settings.subTeamSettings[d.subTeam]
-          return teamSetting ? teamSetting.centerX : width / 2
+          return getSubTeamCenter(d.subTeam, 'x', width, height)
         } else if (d.subTeam === window.__activeSubTeamFilter) {
           // Center selected sub-team
           return width / 2
         } else {
           // Scatter non-selected sub-teams to left and right edges!
-          return d.id % 2 === 0 ? 55 : width - 55
+          return d.id % 2 === 0 ? 70 : width - 70
         }
       })
       .strength(d => {
@@ -111,14 +128,13 @@ export function initRosterSimulation(container, members, settings) {
     .force('y', d3.forceY()
       .y(d => {
         if (!window.__activeSubTeamFilter || window.__activeSubTeamFilter === 'all') {
-          const teamSetting = settings.subTeamSettings[d.subTeam]
-          return teamSetting ? teamSetting.centerY : height / 2
+          return getSubTeamCenter(d.subTeam, 'y', width, height)
         } else if (d.subTeam === window.__activeSubTeamFilter) {
           // Center selected sub-team
           return height / 2
         } else {
           // Scatter non-selected sub-teams to top and bottom edges!
-          return d.id % 3 === 0 ? 55 : height - 55
+          return d.id % 3 === 0 ? 70 : height - 70
         }
       })
       .strength(d => {
@@ -379,14 +395,13 @@ export function updateRosterPhysics(newSettings) {
   activeSimulation.force('x')
     .x(d => {
       if (!window.__activeSubTeamFilter || window.__activeSubTeamFilter === 'all') {
-        const teamSetting = settings.subTeamSettings[d.subTeam]
-        return teamSetting ? teamSetting.centerX : width / 2
+        return getSubTeamCenter(d.subTeam, 'x', width, height)
       } else if (d.subTeam === window.__activeSubTeamFilter) {
         // Center selected sub-team
         return width / 2
       } else {
         // Scatter non-selected sub-teams to left and right edges!
-        return d.id % 2 === 0 ? 55 : width - 55
+        return d.id % 2 === 0 ? 70 : width - 70
       }
     })
     .strength(d => {
@@ -400,14 +415,13 @@ export function updateRosterPhysics(newSettings) {
   activeSimulation.force('y')
     .y(d => {
       if (!window.__activeSubTeamFilter || window.__activeSubTeamFilter === 'all') {
-        const teamSetting = settings.subTeamSettings[d.subTeam]
-        return teamSetting ? teamSetting.centerY : height / 2
+        return getSubTeamCenter(d.subTeam, 'y', width, height)
       } else if (d.subTeam === window.__activeSubTeamFilter) {
         // Center selected sub-team
         return height / 2
       } else {
         // Scatter non-selected sub-teams to top and bottom edges!
-        return d.id % 3 === 0 ? 55 : height - 55
+        return d.id % 3 === 0 ? 70 : height - 70
       }
     })
     .strength(d => {

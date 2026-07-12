@@ -357,7 +357,7 @@ export function initTrackSimulator(container) {
 
         <svg viewBox="0 0 400 180" class="track-svg">
           <!-- Main track outline path -->
-          <path id="sim-track-path" d="${activeTrack.pathD}" class="track-path-bg" />
+          <path id="sim-track-path" d="${activeTrack.pathD}" data-track-id="${activeTrack.id}" class="track-path-bg" />
           <!-- Glowing dynamic active path -->
           <path id="sim-track-glow" d="${activeTrack.pathD}" class="track-path-glow" />
           
@@ -477,7 +477,7 @@ export function initTrackSimulator(container) {
     const animate = () => {
       // Safety checks in case elements are unmounted or active track index changed
       const currentPath = document.getElementById('sim-track-path')
-      if (!currentPath || currentPath.getAttribute('d') !== activeTrack.pathD) return
+      if (!currentPath || currentPath.getAttribute('data-track-id') !== activeTrack.id) return
       if (!document.getElementById('sim-car-group')) return
 
       // Get active mode base speed factor
