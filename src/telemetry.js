@@ -160,17 +160,24 @@ export function initSponsorCalculator(container) {
     const range = segmentEnd.funding - segmentStart.funding
     const ratio = range > 0 ? (funding - segmentStart.funding) / range : 0
 
-    // Interpolate effects
+    // Interpolate weight, laptime and speed deltas continuously, but snap electric motor boost to discrete steps
     const weight = segmentStart.effects.weight + ratio * (segmentEnd.effects.weight - segmentStart.effects.weight)
-    const power = segmentStart.effects.power + ratio * (segmentEnd.effects.power - segmentStart.effects.power)
+    const power = segmentStart.effects.power // Snaps to set interval steps (0, 4, 16, 24) matching physical motor selections
     const laptime = segmentStart.effects.laptime + ratio * (segmentEnd.effects.laptime - segmentStart.effects.laptime)
     const topspeed = segmentStart.effects.topspeed + ratio * (segmentEnd.effects.topspeed - segmentStart.effects.topspeed)
+
+    // Format power unit string to show the discrete motor class selection
+    let motorClassDisplay = `+${power} kW`
+    if (power === 0) motorClassDisplay = 'Standard (0 kW)'
+    else if (power === 4) motorClassDisplay = 'Mid-Range (+4 kW)'
+    else if (power === 16) motorClassDisplay = 'High-Output (+16 kW)'
+    else if (power === 24) motorClassDisplay = 'Torque-Vectoring (+24 kW)'
 
     // Update texts
     milestoneText.innerHTML = `<span class="milestone-bracket">[ECU_LOG]:</span> ${segmentStart.milestoneText}`
     
     valWeight.textContent = `${weight.toFixed(1)} kg`
-    valPower.textContent = `+${Math.round(power)} kW`
+    valPower.textContent = motorClassDisplay
     valLaptime.textContent = `${laptime.toFixed(2)} s`
     valTopspeed.textContent = `+${Math.round(topspeed)} km/h`
 

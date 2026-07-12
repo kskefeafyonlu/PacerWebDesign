@@ -18,7 +18,7 @@
   --radius-sm: 6px;
   --radius-md: 12px;
   --radius-lg: 20px;
-  --max-width: 1200px;
+  --max-width: 1350px;
 }
 
 /* Reset and Base Styles */
@@ -1512,6 +1512,8 @@ body.mode-qualifying .node-group {
   opacity: 0.6;
   transform: translateY(5px);
   transition: var(--transition-smooth);
+  height: 155px; /* Fixed height on desktop to prevent jumping / resizing layouts on hover */
+  overflow: hidden;
 }
 
 .hud-inner {
@@ -1659,6 +1661,7 @@ body.mode-qualifying .node-group {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 25px 35px; /* Enlarged pads */
 }
 
 /* Track Simulator HUD Panel */
@@ -1666,7 +1669,7 @@ body.mode-qualifying .node-group {
   background: linear-gradient(135deg, #1c1c1c 0%, #121212 100%);
   border: 1px solid hsl(var(--color-border));
   border-radius: var(--radius-md);
-  padding: 20px 24px;
+  padding: 25px 30px; /* Enlarged pads */
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
   display: flex;
   flex-direction: column;
@@ -1705,7 +1708,7 @@ body.mode-qualifying .node-group {
 .track-svg {
   width: 100%;
   height: auto;
-  max-height: 140px;
+  max-height: 170px; /* Enlarged map outline */
 }
 
 .track-path-bg {

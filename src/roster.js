@@ -84,6 +84,8 @@ export function initRosterSimulation(container, members, settings) {
   activeSimulation.__width = width
   activeSimulation.__height = height
   activeSimulation.__settings = settings
+
+  simulation
     // Gravity clusters based on subTeam centers or active center-filters
     .force('x', d3.forceX()
       .x(d => {
