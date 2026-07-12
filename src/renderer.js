@@ -381,6 +381,9 @@ function renderEcuModes(ecuConfig) {
       document.body.className = document.body.className.replace(/\bmode-\S+/g, '')
       document.body.classList.add(`mode-${modeId}`)
 
+      // Dispatch custom event to notify listeners (e.g. track simulator)
+      document.body.dispatchEvent(new CustomEvent('ecu-mode-changed', { detail: { modeId } }))
+
       let rainContainer = document.getElementById('rain-particles')
       if (modeId === 'wet') {
         if (!rainContainer) {

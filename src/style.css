@@ -1108,8 +1108,10 @@ body.mode-qualifying .node-group {
   align-items: center;
   gap: 20px;
   font-size: 0.7rem;
-  z-index: 900;
-  position: relative;
+  z-index: 98;
+  position: sticky;
+  top: 81px;
+  backdrop-filter: var(--backdrop-blur);
 }
 
 .ticker-header {
@@ -1946,14 +1948,84 @@ body.mode-qualifying .node-group {
 
 /* Mobile Compatibility & Responsive Layouts Overrides */
 @media (max-width: 768px) {
+  /* Dynamic header styling to prevent overlaps and asymmetric layout */
+  .site-header {
+    flex-direction: column;
+    gap: 12px;
+    padding: 15px 16px;
+    margin: 10px 16px 0 16px;
+    border-radius: var(--radius-md);
+  }
+
+  .header-logo {
+    font-size: 1.25rem;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .header-nav {
+    width: 100%;
+  }
+
+  .header-nav ul {
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 0;
+  }
+
+  .btn-auth-nav {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
+  /* Telemetry Ticker sticky positioning below stacked mobile header */
+  .telemetry-ticker-wrapper {
+    top: 135px; /* Stacked header is taller on mobile */
+    margin: 5px 16px;
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+  }
+
+  .ticker-header {
+    font-size: 0.65rem;
+    padding-right: 8px;
+  }
+
+  .ticker-marquee {
+    gap: 15px;
+  }
+
+  /* ECU Switcher Centering */
+  .ecu-modes-panel {
+    flex-direction: column;
+    gap: 18px;
+    padding: 20px 16px;
+    text-align: center;
+  }
+
+  .ecu-modes-list {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .btn-ecu-mode {
+    justify-content: center;
+    width: 100%;
+  }
+
+  /* Team Roster filter button grids */
   .subteam-filters-wrapper {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 10px;
+    padding: 0 16px;
   }
   
   .filters-buttons {
     width: 100%;
+    justify-content: center;
   }
 
   .btn-filter {
@@ -1961,26 +2033,37 @@ body.mode-qualifying .node-group {
     text-align: center;
   }
 
-  .sim-data-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-  
+  /* Sponsors panel mobile symmetry */
   .sponsors-telemetry-bar {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+    padding: 12px 16px;
+    margin: 10px 16px 20px 16px;
   }
   
   .sponsors-logo-track {
     width: 100%;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 10px;
   }
   
   .sponsor-logo-item {
     flex-grow: 1;
     justify-content: center;
+  }
+
+  /* General card padding compressions */
+  .sponsor-simulator-container {
+    padding: 20px 16px;
+    margin: 20px 16px;
+  }
+
+  .sim-data-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
   }
 
   .blueprint-canvas-wrapper {
@@ -1998,6 +2081,16 @@ body.mode-qualifying .node-group {
 
   .hud-lbl {
     width: 100%;
+  }
+
+  /* ECU tuner placement floating override */
+  .ecu-tuner {
+    bottom: 15px;
+    left: 15px;
+  }
+  
+  .ecu-tuner-content {
+    width: 280px;
   }
 }
 

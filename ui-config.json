@@ -321,19 +321,19 @@
         },
         "simulationData": {
           "endurance": {
-            "predictedLap": "59.2s",
+            "predictedLap": "1m 21.364s",
             "avgVelocity": "26.5 m/s",
             "tempDelta": "+8.4°C",
             "gripCoef": "0.94"
           },
           "qualifying": {
-            "predictedLap": "55.1s",
+            "predictedLap": "1m 14.825s",
             "avgVelocity": "48.2 m/s",
             "tempDelta": "+15.8°C",
             "gripCoef": "0.98"
           },
           "wet": {
-            "predictedLap": "1m 12.4s",
+            "predictedLap": "1m 36.904s",
             "avgVelocity": "12.8 m/s",
             "tempDelta": "+4.2°C",
             "gripCoef": "0.62"
@@ -351,19 +351,19 @@
         },
         "simulationData": {
           "endurance": {
-            "predictedLap": "1m 08.5s",
+            "predictedLap": "1m 40.095s",
             "avgVelocity": "22.1 m/s",
             "tempDelta": "+7.1°C",
             "gripCoef": "0.92"
           },
           "qualifying": {
-            "predictedLap": "1m 03.2s",
+            "predictedLap": "1m 32.518s",
             "avgVelocity": "39.8 m/s",
             "tempDelta": "+13.5°C",
             "gripCoef": "0.96"
           },
           "wet": {
-            "predictedLap": "1m 24.8s",
+            "predictedLap": "1m 58.420s",
             "avgVelocity": "10.5 m/s",
             "tempDelta": "+3.8°C",
             "gripCoef": "0.58"

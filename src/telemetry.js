@@ -540,6 +540,9 @@ export function initTrackSimulator(container) {
         triggerSimulation()
       }
     })
+    document.body.addEventListener('ecu-mode-changed', () => {
+      triggerSimulation()
+    })
     window.__ecuSimListenerBound = true
   }
 
