@@ -521,8 +521,8 @@ export function initTrackSimulator(container) {
         }
       }
 
-      // Rotate group to tangent angle
-      const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI
+      // Compute direction tangent angle using our pre-calculated points pB and pC
+      const angle = Math.atan2(pC.y - pB.y, pC.x - pB.x) * 180 / Math.PI
       carGroup.setAttribute('transform', `translate(${pB.x}, ${pB.y}) rotate(${angle + 90})`)
 
       requestAnimationFrame(animate)

@@ -81,6 +81,9 @@ export function initRosterSimulation(container, members, settings) {
     .force('collide', d3.forceCollide().radius(settings.collisionRadius || 45).iterations(1))
   
   activeSimulation = simulation
+  activeSimulation.__width = width
+  activeSimulation.__height = height
+  activeSimulation.__settings = settings
     // Gravity clusters based on subTeam centers or active center-filters
     .force('x', d3.forceX()
       .x(d => {
@@ -366,6 +369,53 @@ export function initRosterSimulation(container, members, settings) {
 export function updateRosterPhysics(newSettings) {
   if (!activeSimulation) return
 
+  const settings = activeSimulation.__settings
+  const width = activeSimulation.__width
+  const height = activeSimulation.__height
+
+  // Re-bind gravity coordinates so dynamic filter selections are evaluated
+  activeSimulation.force('x')
+    .x(d => {
+      if (!window.__activeSubTeamFilter || window.__activeSubTeamFilter === 'all') {
+        const teamSetting = settings.subTeamSettings[d.subTeam]
+        return teamSetting ? teamSetting.centerX : width / 2
+      } else if (d.subTeam === window.__activeSubTeamFilter) {
+        // Center selected sub-team
+        return width / 2
+      } else {
+        // Scatter non-selected sub-teams to left and right edges!
+        return d.id % 2 === 0 ? 55 : width - 55
+      }
+    })
+    .strength(d => {
+      if (window.__activeSubTeamFilter && window.__activeSubTeamFilter !== 'all' && d.subTeam !== window.__activeSubTeamFilter) {
+        // Pull scattered nodes strongly to the boundaries
+        return 0.28
+      }
+      return settings.gravityStrengthX || 0.15
+    })
+
+  activeSimulation.force('y')
+    .y(d => {
+      if (!window.__activeSubTeamFilter || window.__activeSubTeamFilter === 'all') {
+        const teamSetting = settings.subTeamSettings[d.subTeam]
+        return teamSetting ? teamSetting.centerY : height / 2
+      } else if (d.subTeam === window.__activeSubTeamFilter) {
+        // Center selected sub-team
+        return height / 2
+      } else {
+        // Scatter non-selected sub-teams to top and bottom edges!
+        return d.id % 3 === 0 ? 55 : height - 55
+      }
+    })
+    .strength(d => {
+      if (window.__activeSubTeamFilter && window.__activeSubTeamFilter !== 'all' && d.subTeam !== window.__activeSubTeamFilter) {
+        return 0.28
+      }
+      return settings.gravityStrengthY || 0.15
+    })
+
+  // Apply custom settings updates from the ECU tuner sliders
   if (newSettings.chargeStrength !== undefined) {
     activeSimulation.force('charge').strength(newSettings.chargeStrength)
   }
@@ -373,13 +423,17 @@ export function updateRosterPhysics(newSettings) {
     activeSimulation.force('collide').radius(newSettings.collisionRadius)
   }
   if (newSettings.gravityStrengthX !== undefined) {
-    activeSimulation.force('x').strength(newSettings.gravityStrengthX)
+    settings.gravityStrengthX = newSettings.gravityStrengthX
   }
   if (newSettings.gravityStrengthY !== undefined) {
-    activeSimulation.force('y').strength(newSettings.gravityStrengthY)
+    settings.gravityStrengthY = newSettings.gravityStrengthY
   }
 
-  activeSimulation.alpha(0.3).restart()
+  // Force simulation re-initialization to bind the new dynamic accessors
+  activeSimulation.force('x').initialize(activeSimulation.nodes())
+  activeSimulation.force('y').initialize(activeSimulation.nodes())
+
+  activeSimulation.alpha(0.35).restart()
 }
 
 /**
