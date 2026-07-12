@@ -1,4 +1,6 @@
 import { signIn, signUp, signOut, isSupabaseConfigured } from './auth'
+import { initRosterSimulation } from './roster'
+
 
 /**
  * Apply the theme configurations to the CSS Custom Properties (variables)
@@ -218,47 +220,12 @@ function renderTeam(teamConfig) {
   header.appendChild(subtitle)
   section.appendChild(header)
 
-  const grid = document.createElement('div')
-  grid.className = 'team-grid'
-
-  teamConfig.members.forEach(member => {
-    const card = document.createElement('div')
-    card.className = 'team-card'
-
-    const avatar = document.createElement('div')
-    avatar.className = 'team-avatar'
-    avatar.textContent = member.avatarEmoji
-
-    const name = document.createElement('h3')
-    name.className = 'team-member-name'
-    name.textContent = member.name
-
-    const role = document.createElement('p')
-    role.className = 'team-member-role'
-    role.textContent = member.role
-
-    const bio = document.createElement('p')
-    bio.className = 'team-member-bio'
-    bio.textContent = member.bio
-
-    const socials = document.createElement('div')
-    socials.className = 'team-member-socials'
-    if (member.github) {
-      socials.innerHTML += `<a href="${member.github}" target="_blank" aria-label="GitHub">💻 GitHub</a>`
-    }
-    if (member.linkedin) {
-      socials.innerHTML += `<a href="${member.linkedin}" target="_blank" aria-label="LinkedIn">🔗 LinkedIn</a>`
-    }
-
-    card.appendChild(avatar)
-    card.appendChild(name)
-    card.appendChild(role)
-    card.appendChild(bio)
-    card.appendChild(socials)
-    grid.appendChild(card)
-  })
-
-  section.appendChild(grid)
+  // Create the canvas container for D3.js physics
+  const canvasContainer = document.createElement('div')
+  canvasContainer.className = 'roster-canvas-container'
+  canvasContainer.id = 'roster-canvas'
+  
+  section.appendChild(canvasContainer)
   return section
 }
 
@@ -503,6 +470,12 @@ export function renderApp(config, user) {
   appContainer.appendChild(header)
   appContainer.appendChild(main)
   appContainer.appendChild(footer)
+
+  // Initialize interactive roster simulation
+  const canvasElement = document.getElementById('roster-canvas')
+  if (canvasElement) {
+    initRosterSimulation(canvasElement, config.teamSection.members, config.teamSection.rosterSettings)
+  }
 
   // 4. Render development warning helper if needed
   renderDevNotice()
