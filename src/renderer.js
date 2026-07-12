@@ -1,7 +1,8 @@
 import { signIn, signUp, signOut, isSupabaseConfigured } from './auth'
 import { initRosterSimulation, updateRosterPhysics, updateEcuMode } from './roster'
 import { initScrollTelemetry } from './scroll'
-import { initTelemetryTicker, initSponsorCalculator, initComponentTree } from './telemetry'
+import { initTelemetryTicker, initSponsorCalculator, initComponentTree, initTrackSimulator } from './telemetry'
+
 
 
 
@@ -232,26 +233,64 @@ function renderTeam(teamConfig) {
   section.id = 'team'
   section.className = 'team-section'
 
-  const header = document.createElement('div')
-  header.className = 'section-header'
-
-  const title = document.createElement('h2')
-  title.textContent = teamConfig.title
-
-  const subtitle = document.createElement('p')
-  subtitle.className = 'section-subtitle'
-  subtitle.textContent = teamConfig.subtitle
-
-  header.appendChild(title)
-  header.appendChild(subtitle)
-  section.appendChild(header)
-
   // Create the canvas container for D3.js physics
   const canvasContainer = document.createElement('div')
   canvasContainer.className = 'roster-canvas-container'
   canvasContainer.id = 'roster-canvas'
   
   section.appendChild(canvasContainer)
+  return section
+}
+
+/**
+ * Renders the Team Roster Section Header
+ * @param {object} teamConfig 
+ */
+function renderRosterHeader(teamConfig) {
+  const header = document.createElement('div')
+  header.className = 'section-header'
+  header.innerHTML = `
+    <h2>${teamConfig.title}</h2>
+    <p class="section-subtitle">${teamConfig.subtitle}</p>
+  `
+  return header
+}
+
+/**
+ * Renders active sponsors in a sleek horizontal track
+ * @param {object} sponsorsConfig 
+ */
+function renderActiveSponsorsBar(sponsorsConfig) {
+  const section = document.createElement('section')
+  section.className = 'sponsors-telemetry-bar'
+  
+  const label = document.createElement('div')
+  label.className = 'sponsors-bar-title'
+  label.textContent = '// ACTIVE_PARTNERS_NETWORK:'
+  section.appendChild(label)
+
+  const track = document.createElement('div')
+  track.className = 'sponsors-logo-track'
+
+  sponsorsConfig.sponsors.forEach(sp => {
+    const item = document.createElement('a')
+    item.href = sp.websiteUrl
+    item.target = '_blank'
+    item.className = 'sponsor-logo-item'
+    item.title = sp.description
+
+    const tier = sponsorsConfig.tiers.find(t => t.name === sp.tier)
+    const badgeColor = tier ? tier.badgeColor : '#737373'
+    const textColor = tier ? tier.textColor : '#ffffff'
+
+    item.innerHTML = `
+      <span class="sponsor-tier-badge" style="background-color: ${badgeColor}; color: ${textColor}">${sp.tier.toUpperCase()}</span>
+      <span class="sponsor-name-text">${sp.name}</span>
+    `
+    track.appendChild(item)
+  })
+
+  section.appendChild(track)
   return section
 }
 
@@ -797,29 +836,49 @@ export function renderApp(config, user) {
 
     // Render subview
     if (viewName === 'roster') {
-      const team = renderTeam(config.teamSection)
-      main.appendChild(team)
+      // 1. Roster section header at the top
+      const headerNode = renderRosterHeader(config.teamSection)
+      main.appendChild(headerNode)
 
-      // Mount ECU Mode Switcher (dial)
+      // 2. Active Sponsors Network near the top
+      const sponsorsNode = renderActiveSponsorsBar(config.sponsorsSection)
+      main.appendChild(sponsorsNode)
+
+      // 3. Cockpit Control Console (ECU modes selector + Live Track simulator)
+      const cockpitConsole = document.createElement('div')
+      cockpitConsole.className = 'cockpit-dashboard-grid'
+      
+      // Left: ECU Modes Selector Dial
       const ecuPanel = renderEcuModes(config.ecuSettings)
-      const canvas = team.querySelector('#roster-canvas')
-      team.insertBefore(ecuPanel, canvas)
+      cockpitConsole.appendChild(ecuPanel)
 
-      // Append ECU physics tuner to main
+      // Right: Track simulator
+      const trackPanel = document.createElement('div')
+      trackPanel.id = 'track-simulator-container'
+      cockpitConsole.appendChild(trackPanel)
+      initTrackSimulator(trackPanel)
+
+      main.appendChild(cockpitConsole)
+
+      // 4. ECU tuner overlay drawer (floating toggle)
       const tuner = renderEcuTuner(config.teamSection.rosterSettings)
       main.appendChild(tuner)
 
-      // Mount Sponsor Impact Simulator panel
+      // 5. Sponsor Impact Simulator panel
       const calcContainer = document.createElement('div')
       calcContainer.id = 'sponsor-simulator-hud'
       main.appendChild(calcContainer)
       initSponsorCalculator(calcContainer)
 
-      // Mount Carbon Component Tree Blueprint
+      // 6. Carbon Component Tree Blueprint
       const treeContainer = document.createElement('div')
       treeContainer.id = 'component-tree-hud'
       main.appendChild(treeContainer)
       initComponentTree(treeContainer)
+
+      // 7. Interactive Team Roster D3 Canvas placed at the very bottom
+      const teamNode = renderTeam(config.teamSection)
+      main.appendChild(teamNode)
 
       const canvasElement = document.getElementById('roster-canvas')
       if (canvasElement) {

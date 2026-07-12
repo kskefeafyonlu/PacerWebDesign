@@ -306,6 +306,16 @@
       }
     ]
   },
+  "trackSimulator": {
+    "title": "Live Track Simulation",
+    "trackName": "PACER INTERNATIONAL SPEEDWAY",
+    "pathD": "M 30 75 C 30 20, 120 20, 180 50 C 240 80, 300 80, 350 50 C 380 30, 380 120, 300 120 C 220 120, 180 130, 120 110 C 60 90, 30 110, 30 75 Z",
+    "speeds": {
+      "endurance": 1.5,
+      "qualifying": 3.4,
+      "wet": 0.65
+    }
+  },
   "footer": {
     "copyright": "© 2026 EGEPACERS. All rights reserved.",
     "links": [

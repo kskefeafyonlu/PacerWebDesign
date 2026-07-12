@@ -312,3 +312,96 @@ export function initComponentTree(container) {
     })
   })
 }
+
+/**
+ * Initializes the autonomous Live Track Simulator
+ * @param {HTMLElement} container - The container element to mount the track in
+ */
+export function initTrackSimulator(container) {
+  const trackConfig = config.trackSimulator
+  container.className = 'track-simulator-hud'
+  container.innerHTML = `
+    <div class="track-header">
+      <span class="track-title">// TRACK_SIMULATOR</span>
+      <span id="track-name" class="track-name-display">${trackConfig.trackName}</span>
+    </div>
+    <div class="track-map-container">
+      <svg viewBox="0 0 400 180" class="track-svg">
+        <!-- Main track outline path -->
+        <path id="sim-track-path" d="${trackConfig.pathD}" class="track-path-bg" />
+        <!-- Glowing dynamic active path -->
+        <path id="sim-track-glow" d="${trackConfig.pathD}" class="track-path-glow" />
+        
+        <!-- Rotating and translating Car Pointer -->
+        <g id="sim-car-group">
+          <!-- Glow ring around car -->
+          <circle r="8" class="car-pulse" />
+          <!-- Car dot -->
+          <circle r="4.5" class="car-dot" />
+          <!-- Tiny triangle pointing in velocity direction -->
+          <polygon points="0,-4 3,3 -3,3" class="car-pointer" />
+        </g>
+      </svg>
+      <div class="track-telemetry-overlay">
+        <span class="telemetry-stat">V_CAR: <span id="track-speed-readout">0.0</span> m/s</span>
+        <span class="telemetry-stat">LAP: <span id="track-lap-count">1</span></span>
+      </div>
+    </div>
+  `
+
+  setTimeout(() => {
+    const path = document.getElementById('sim-track-path')
+    const carGroup = document.getElementById('sim-car-group')
+    const speedReadout = document.getElementById('track-speed-readout')
+    const lapReadout = document.getElementById('track-lap-count')
+
+    if (!path || !carGroup) return
+
+    const totalLength = path.getTotalLength()
+    let currentDistance = 0
+    let lapCount = 1
+
+    const animate = () => {
+      // Safety checks in case element is unmounted on route transitions
+      if (!document.getElementById('sim-track-path') || !document.getElementById('sim-car-group')) return
+
+      // Get active mode speed setting from config
+      const activeModeId = document.body.className.match(/mode-(\w+)/)?.[1] || 'endurance'
+      const speedFactor = trackConfig.speeds[activeModeId] || 1.5
+      
+      // Calculate speed in m/s (mapped for display value, e.g. Qualifying is faster!)
+      let displaySpeed = 22.4
+      if (activeModeId === 'qualifying') displaySpeed = 48.2 + (Math.random() - 0.5) * 1.5
+      if (activeModeId === 'wet') displaySpeed = 12.8 + (Math.random() - 0.5) * 0.4
+      if (activeModeId === 'endurance') displaySpeed = 26.5 + (Math.random() - 0.5) * 0.8
+      if (speedReadout) speedReadout.textContent = displaySpeed.toFixed(1)
+
+      const prevDistance = currentDistance
+      currentDistance = (currentDistance + speedFactor) % totalLength
+
+      // Detect lap crossings (distance wraps around)
+      if (currentDistance < prevDistance) {
+        lapCount++
+        if (lapReadout) {
+          lapReadout.textContent = lapCount
+          // Quick flashing alert animation
+          lapReadout.classList.add('flash-alert')
+          setTimeout(() => lapReadout.classList.remove('flash-alert'), 1000)
+        }
+      }
+
+      // Compute coordinate position and velocity tangent vector
+      const p1 = path.getPointAtLength(currentDistance)
+      const p2 = path.getPointAtLength((currentDistance + 2) % totalLength)
+      const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI
+
+      // Rotate group 90 degrees offset because triangle points up by default
+      carGroup.setAttribute('transform', `translate(${p1.x}, ${p1.y}) rotate(${angle + 90})`)
+
+      requestAnimationFrame(animate)
+    }
+
+    requestAnimationFrame(animate)
+  }, 100)
+}
+
