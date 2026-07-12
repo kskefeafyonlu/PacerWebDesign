@@ -11,6 +11,7 @@
     "teamName": "EGEPACERS",
     "logoEmoji": "🏎️",
     "navLinks": [
+      { "id": "nav-home", "label": "Dashboard", "target": "#home" },
       { "id": "nav-roster", "label": "Team Roster", "target": "#roster" },
       { "id": "nav-contact", "label": "Contact Us", "target": "#contact" }
     ]
@@ -307,14 +308,69 @@
     ]
   },
   "trackSimulator": {
-    "title": "Live Track Simulation",
-    "trackName": "PACER INTERNATIONAL SPEEDWAY",
-    "pathD": "M 30 75 C 30 20, 120 20, 180 50 C 240 80, 300 80, 350 50 C 380 30, 380 120, 300 120 C 220 120, 180 130, 120 110 C 60 90, 30 110, 30 75 Z",
-    "speeds": {
-      "endurance": 1.5,
-      "qualifying": 3.4,
-      "wet": 0.65
-    }
+    "title": "Live Track Simulation Panel",
+    "tracks": [
+      {
+        "id": "pacer_speedway",
+        "name": "PACER INTERNATIONAL SPEEDWAY (MAP_A)",
+        "pathD": "M 30 75 C 30 20, 120 20, 180 50 C 240 80, 300 80, 350 50 C 380 30, 380 120, 300 120 C 220 120, 180 130, 120 110 C 60 90, 30 110, 30 75 Z",
+        "speeds": {
+          "endurance": 1.5,
+          "qualifying": 3.4,
+          "wet": 0.65
+        },
+        "simulationData": {
+          "endurance": {
+            "predictedLap": "59.2s",
+            "avgVelocity": "26.5 m/s",
+            "tempDelta": "+8.4°C",
+            "gripCoef": "0.94"
+          },
+          "qualifying": {
+            "predictedLap": "55.1s",
+            "avgVelocity": "48.2 m/s",
+            "tempDelta": "+15.8°C",
+            "gripCoef": "0.98"
+          },
+          "wet": {
+            "predictedLap": "1m 12.4s",
+            "avgVelocity": "12.8 m/s",
+            "tempDelta": "+4.2°C",
+            "gripCoef": "0.62"
+          }
+        }
+      },
+      {
+        "id": "ege_ring",
+        "name": "EGE RING GP CIRCUIT (MAP_B)",
+        "pathD": "M 40 90 L 120 40 L 220 40 L 260 90 L 320 50 C 370 70, 370 110, 320 130 L 280 110 C 230 150, 150 150, 100 130 C 50 110, 30 110, 40 90 Z",
+        "speeds": {
+          "endurance": 1.2,
+          "qualifying": 2.8,
+          "wet": 0.5
+        },
+        "simulationData": {
+          "endurance": {
+            "predictedLap": "1m 08.5s",
+            "avgVelocity": "22.1 m/s",
+            "tempDelta": "+7.1°C",
+            "gripCoef": "0.92"
+          },
+          "qualifying": {
+            "predictedLap": "1m 03.2s",
+            "avgVelocity": "39.8 m/s",
+            "tempDelta": "+13.5°C",
+            "gripCoef": "0.96"
+          },
+          "wet": {
+            "predictedLap": "1m 24.8s",
+            "avgVelocity": "10.5 m/s",
+            "tempDelta": "+3.8°C",
+            "gripCoef": "0.58"
+          }
+        }
+      }
+    ]
   },
   "footer": {
     "copyright": "© 2026 EGEPACERS. All rights reserved.",

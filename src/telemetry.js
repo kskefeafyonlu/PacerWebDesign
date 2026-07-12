@@ -319,37 +319,143 @@ export function initComponentTree(container) {
  */
 export function initTrackSimulator(container) {
   const trackConfig = config.trackSimulator
-  container.className = 'track-simulator-hud'
-  container.innerHTML = `
-    <div class="track-header">
-      <span class="track-title">// TRACK_SIMULATOR</span>
-      <span id="track-name" class="track-name-display">${trackConfig.trackName}</span>
-    </div>
-    <div class="track-map-container">
-      <svg viewBox="0 0 400 180" class="track-svg">
-        <!-- Main track outline path -->
-        <path id="sim-track-path" d="${trackConfig.pathD}" class="track-path-bg" />
-        <!-- Glowing dynamic active path -->
-        <path id="sim-track-glow" d="${trackConfig.pathD}" class="track-path-glow" />
-        
-        <!-- Rotating and translating Car Pointer -->
-        <g id="sim-car-group">
-          <!-- Glow ring around car -->
-          <circle r="8" class="car-pulse" />
-          <!-- Car dot -->
-          <circle r="4.5" class="car-dot" />
-          <!-- Tiny triangle pointing in velocity direction -->
-          <polygon points="0,-4 3,3 -3,3" class="car-pointer" />
-        </g>
-      </svg>
-      <div class="track-telemetry-overlay">
-        <span class="telemetry-stat">V_CAR: <span id="track-speed-readout">0.0</span> m/s</span>
-        <span class="telemetry-stat">LAP: <span id="track-lap-count">1</span></span>
-      </div>
-    </div>
-  `
+  let activeTrackIndex = 0
 
-  setTimeout(() => {
+  container.className = 'track-simulator-hud'
+
+  function renderTrackConsole() {
+    const activeTrack = trackConfig.tracks[activeTrackIndex]
+    
+    container.innerHTML = `
+      <div class="track-header">
+        <span class="track-title">// TRACK_DYNAMICS_CONSOLE</span>
+        <div class="track-map-selector">
+          ${trackConfig.tracks.map((t, idx) => `
+            <button class="btn-track-select ${idx === activeTrackIndex ? 'active' : ''}" data-index="${idx}">
+              ${idx === 0 ? 'MAP_A' : 'MAP_B'}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="track-map-container">
+        <!-- Loader Screen for Simulation Calculations -->
+        <div class="track-sim-loader" id="track-sim-loader" style="display: none;">
+          <div class="loader-content">
+            <span class="loader-title">RUNNING_PRE_RUN_SIMULATION...</span>
+            <div class="loader-progress"><span id="loader-progress-bar"></span></div>
+            <span class="loader-status">CALCULATING KINEMATIC INTEGRATORS</span>
+          </div>
+        </div>
+
+        <svg viewBox="0 0 400 180" class="track-svg">
+          <!-- Main track outline path -->
+          <path id="sim-track-path" d="${activeTrack.pathD}" class="track-path-bg" />
+          <!-- Glowing dynamic active path -->
+          <path id="sim-track-glow" d="${activeTrack.pathD}" class="track-path-glow" />
+          
+          <!-- Rotating and translating Car Pointer -->
+          <g id="sim-car-group">
+            <circle r="8" class="car-pulse" />
+            <circle r="4.5" class="car-dot" />
+            <polygon points="0,-4 3,3 -3,3" class="car-pointer" />
+          </g>
+        </svg>
+        <div class="track-telemetry-overlay">
+          <span class="telemetry-stat">V_ACTUAL: <span id="track-speed-readout">0.0</span> m/s</span>
+          <span class="telemetry-stat">LAP: <span id="track-lap-count">1</span></span>
+        </div>
+      </div>
+
+      <div class="track-pre-run-sim">
+        <div class="sim-data-title">// PRE_RUN_TELEMETRY_FORECAST: <span id="forecast-track-name" class="track-name-highlight"></span></div>
+        <div class="sim-data-grid">
+          <div class="sim-data-item">
+            <span class="sim-item-lbl">LAP_TIME_EST</span>
+            <span id="sim-stat-lap" class="sim-item-val">--</span>
+          </div>
+          <div class="sim-data-item">
+            <span class="sim-item-lbl">AVG_CORNER_V</span>
+            <span id="sim-stat-vel" class="sim-item-val">--</span>
+          </div>
+          <div class="sim-data-item">
+            <span class="sim-item-lbl">THERMAL_DELTA</span>
+            <span id="sim-stat-temp" class="sim-item-val">--</span>
+          </div>
+          <div class="sim-data-item">
+            <span class="sim-item-lbl">GRIP_FACTOR</span>
+            <span id="sim-stat-grip" class="sim-item-val">--</span>
+          </div>
+        </div>
+      </div>
+    `
+
+    // Hook click events on Map selector tabs
+    const buttons = container.querySelectorAll('.btn-track-select')
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const index = parseInt(btn.getAttribute('data-index'))
+        if (index === activeTrackIndex) return
+        activeTrackIndex = index
+        renderTrackConsole()
+        triggerSimulation()
+      })
+    })
+
+    initializeAnimation()
+  }
+
+  function triggerSimulation() {
+    const loader = document.getElementById('track-sim-loader')
+    const progressBar = document.getElementById('loader-progress-bar')
+    const statLap = document.getElementById('sim-stat-lap')
+    const statVel = document.getElementById('sim-stat-vel')
+    const statTemp = document.getElementById('sim-stat-temp')
+    const statGrip = document.getElementById('sim-stat-grip')
+
+    if (!loader || !progressBar) return
+
+    // Show loader and animate progress bar
+    loader.style.display = 'flex'
+    progressBar.style.width = '0%'
+    
+    // Set labels to loading state
+    if (statLap) statLap.textContent = 'SIM_RUN'
+    if (statVel) statVel.textContent = 'SIM_RUN'
+    if (statTemp) statTemp.textContent = 'SIM_RUN'
+    if (statGrip) statGrip.textContent = 'SIM_RUN'
+
+    setTimeout(() => {
+      progressBar.style.width = '100%'
+    }, 50)
+
+    // Complete calculations after 750ms
+    setTimeout(() => {
+      loader.style.display = 'none'
+      updateSimulationStats()
+    }, 750)
+  }
+
+  function updateSimulationStats() {
+    const activeTrack = trackConfig.tracks[activeTrackIndex]
+    const activeModeId = document.body.className.match(/mode-(\w+)/)?.[1] || 'endurance'
+    const simData = activeTrack.simulationData[activeModeId]
+
+    const forecastTrackName = document.getElementById('forecast-track-name')
+    const statLap = document.getElementById('sim-stat-lap')
+    const statVel = document.getElementById('sim-stat-vel')
+    const statTemp = document.getElementById('sim-stat-temp')
+    const statGrip = document.getElementById('sim-stat-grip')
+
+    if (forecastTrackName) forecastTrackName.textContent = activeTrack.name
+    if (statLap && simData) statLap.textContent = simData.predictedLap
+    if (statVel && simData) statVel.textContent = simData.avgVelocity
+    if (statTemp && simData) statTemp.textContent = simData.tempDelta
+    if (statGrip && simData) statGrip.textContent = simData.gripCoef
+  }
+
+  function initializeAnimation() {
+    const activeTrack = trackConfig.tracks[activeTrackIndex]
     const path = document.getElementById('sim-track-path')
     const carGroup = document.getElementById('sim-car-group')
     const speedReadout = document.getElementById('track-speed-readout')
@@ -362,46 +468,84 @@ export function initTrackSimulator(container) {
     let lapCount = 1
 
     const animate = () => {
-      // Safety checks in case element is unmounted on route transitions
-      if (!document.getElementById('sim-track-path') || !document.getElementById('sim-car-group')) return
+      // Safety checks in case elements are unmounted or active track index changed
+      const currentPath = document.getElementById('sim-track-path')
+      if (!currentPath || currentPath.getAttribute('d') !== activeTrack.pathD) return
+      if (!document.getElementById('sim-car-group')) return
 
-      // Get active mode speed setting from config
+      // Get active mode base speed factor
       const activeModeId = document.body.className.match(/mode-(\w+)/)?.[1] || 'endurance'
-      const speedFactor = trackConfig.speeds[activeModeId] || 1.5
-      
-      // Calculate speed in m/s (mapped for display value, e.g. Qualifying is faster!)
+      const baseSpeed = activeTrack.speeds[activeModeId] || 1.5
+
+      // Curvature-based slowing physics (Calculates angles delta between local tangent lines)
+      const d = currentDistance
+      const pA = path.getPointAtLength((d - 3 + totalLength) % totalLength)
+      const pB = path.getPointAtLength(d)
+      const pC = path.getPointAtLength((d + 3) % totalLength)
+
+      const v1 = { x: pB.x - pA.x, y: pB.y - pA.y }
+      const v2 = { x: pC.x - pB.x, y: pC.y - pB.y }
+
+      const len1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y)
+      const len2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y)
+
+      let cosTheta = 1
+      if (len1 > 0 && len2 > 0) {
+        cosTheta = (v1.x * v2.x + v1.y * v2.y) / (len1 * len2)
+      }
+      cosTheta = Math.max(-1, Math.min(1, cosTheta))
+      const turnAngle = Math.acos(cosTheta)
+
+      // Braking coefficient: slow down up to 55% during sharp direction changes
+      const brakingCoeff = Math.max(0.45, 1.0 - turnAngle * 2.4)
+      const speedFactor = baseSpeed * brakingCoeff
+
+      // Map speed in m/s based on ECU mode + braking dynamics for digital display
       let displaySpeed = 22.4
-      if (activeModeId === 'qualifying') displaySpeed = 48.2 + (Math.random() - 0.5) * 1.5
-      if (activeModeId === 'wet') displaySpeed = 12.8 + (Math.random() - 0.5) * 0.4
-      if (activeModeId === 'endurance') displaySpeed = 26.5 + (Math.random() - 0.5) * 0.8
+      if (activeModeId === 'qualifying') displaySpeed = 48.2 * brakingCoeff + (Math.random() - 0.5) * 1.5
+      if (activeModeId === 'wet') displaySpeed = 12.8 * brakingCoeff + (Math.random() - 0.5) * 0.4
+      if (activeModeId === 'endurance') displaySpeed = 26.5 * brakingCoeff + (Math.random() - 0.5) * 0.8
+      
       if (speedReadout) speedReadout.textContent = displaySpeed.toFixed(1)
 
       const prevDistance = currentDistance
       currentDistance = (currentDistance + speedFactor) % totalLength
 
-      // Detect lap crossings (distance wraps around)
+      // Detect lap crossings
       if (currentDistance < prevDistance) {
         lapCount++
         if (lapReadout) {
           lapReadout.textContent = lapCount
-          // Quick flashing alert animation
           lapReadout.classList.add('flash-alert')
           setTimeout(() => lapReadout.classList.remove('flash-alert'), 1000)
         }
       }
 
-      // Compute coordinate position and velocity tangent vector
-      const p1 = path.getPointAtLength(currentDistance)
-      const p2 = path.getPointAtLength((currentDistance + 2) % totalLength)
+      // Rotate group to tangent angle
       const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI
-
-      // Rotate group 90 degrees offset because triangle points up by default
-      carGroup.setAttribute('transform', `translate(${p1.x}, ${p1.y}) rotate(${angle + 90})`)
+      carGroup.setAttribute('transform', `translate(${pB.x}, ${pB.y}) rotate(${angle + 90})`)
 
       requestAnimationFrame(animate)
     }
 
     requestAnimationFrame(animate)
-  }, 100)
+    updateSimulationStats()
+  }
+
+  // Bind listener to document body once to detect ECU switch dial triggers globally
+  if (!window.__ecuSimListenerBound) {
+    document.body.addEventListener('click', (e) => {
+      const btn = e.target.closest('.btn-ecu-mode')
+      if (btn) {
+        triggerSimulation()
+      }
+    })
+    window.__ecuSimListenerBound = true
+  }
+
+  // Initial trigger
+  renderTrackConsole()
+  triggerSimulation()
 }
+
 

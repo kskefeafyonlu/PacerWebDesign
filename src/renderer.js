@@ -295,6 +295,42 @@ function renderActiveSponsorsBar(sponsorsConfig) {
 }
 
 /**
+ * Renders the sub-team filter buttons
+ * @param {object} subTeamSettings 
+ */
+function renderSubTeamFilters(subTeamSettings) {
+  const container = document.createElement('div')
+  container.className = 'subteam-filters-wrapper'
+  container.innerHTML = `
+    <span class="filters-label">// TEAM_FILTER:</span>
+    <div class="filters-buttons">
+      <button class="btn-filter active" data-filter="all">ALL_TEAMS</button>
+      ${Object.keys(subTeamSettings).map(team => `
+        <button class="btn-filter" data-filter="${team}">${team.toUpperCase()}_TEAM</button>
+      `).join('')}
+    </div>
+  `
+
+  setTimeout(() => {
+    const buttons = container.querySelectorAll('.btn-filter')
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        buttons.forEach(b => b.classList.remove('active'))
+        btn.classList.add('active')
+        
+        const filter = btn.getAttribute('data-filter')
+        window.__activeSubTeamFilter = filter
+        
+        // Trigger D3 layout update
+        updateRosterPhysics({})
+      })
+    })
+  }, 100)
+
+  return container
+}
+
+/**
  * Renders the ECU Drive Mode Switcher Dial
  * @param {object} ecuConfig 
  */
@@ -790,7 +826,7 @@ function renderDevNotice() {
 export function renderApp(config, user) {
   window.__uiConfig = config
   if (!window.__activeView) {
-    window.__activeView = 'roster'
+    window.__activeView = 'home'
   }
 
   // 1. Reset #app container
@@ -827,20 +863,24 @@ export function renderApp(config, user) {
 
     // Clear dynamic subview intervals
     const oldTicker = document.getElementById('global-telemetry-ticker')
-    if (viewName !== 'roster' && oldTicker && oldTicker.__telemetryInterval) {
-      clearInterval(oldTicker.__telemetryInterval)
-      oldTicker.innerHTML = ''
-    } else if (viewName === 'roster' && oldTicker && !oldTicker.innerHTML) {
-      initTelemetryTicker(oldTicker)
+    if (viewName === 'contact') {
+      if (oldTicker && oldTicker.__telemetryInterval) {
+        clearInterval(oldTicker.__telemetryInterval)
+        oldTicker.innerHTML = ''
+      }
+    } else {
+      if (oldTicker && !oldTicker.innerHTML) {
+        initTelemetryTicker(oldTicker)
+      }
     }
 
     // Render subview
-    if (viewName === 'roster') {
-      // 1. Roster section header at the top
-      const headerNode = renderRosterHeader(config.teamSection)
-      main.appendChild(headerNode)
+    if (viewName === 'home') {
+      // 1. Render Hero Welcome
+      const heroNode = renderHero(config.hero)
+      main.appendChild(heroNode)
 
-      // 2. Active Sponsors Network near the top
+      // 2. Active Sponsors Network
       const sponsorsNode = renderActiveSponsorsBar(config.sponsorsSection)
       main.appendChild(sponsorsNode)
 
@@ -876,12 +916,22 @@ export function renderApp(config, user) {
       main.appendChild(treeContainer)
       initComponentTree(treeContainer)
 
-      // 7. Interactive Team Roster D3 Canvas placed at the very bottom
+    } else if (viewName === 'roster') {
+      // 1. Roster section header at the top
+      const headerNode = renderRosterHeader(config.teamSection)
+      main.appendChild(headerNode)
+
+      // 2. Sub-team Filter Button Bar
+      const filterNode = renderSubTeamFilters(config.teamSection.rosterSettings.subTeamSettings)
+      main.appendChild(filterNode)
+
+      // 3. Interactive Team Roster D3 Canvas placed at the very bottom
       const teamNode = renderTeam(config.teamSection)
       main.appendChild(teamNode)
 
       const canvasElement = document.getElementById('roster-canvas')
       if (canvasElement) {
+        window.__activeSubTeamFilter = 'all'
         initRosterSimulation(canvasElement, config.teamSection.members, config.teamSection.rosterSettings)
       }
     } else if (viewName === 'contact') {

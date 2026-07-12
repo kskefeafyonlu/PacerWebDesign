@@ -81,20 +81,47 @@ export function initRosterSimulation(container, members, settings) {
     .force('collide', d3.forceCollide().radius(settings.collisionRadius || 45).iterations(1))
   
   activeSimulation = simulation
-    // Gravity clusters based on subTeam centers defined in config
+    // Gravity clusters based on subTeam centers or active center-filters
     .force('x', d3.forceX()
       .x(d => {
-        const teamSetting = settings.subTeamSettings[d.subTeam]
-        return teamSetting ? teamSetting.centerX : width / 2
+        if (!window.__activeSubTeamFilter || window.__activeSubTeamFilter === 'all') {
+          const teamSetting = settings.subTeamSettings[d.subTeam]
+          return teamSetting ? teamSetting.centerX : width / 2
+        } else if (d.subTeam === window.__activeSubTeamFilter) {
+          // Center selected sub-team
+          return width / 2
+        } else {
+          // Scatter non-selected sub-teams to left and right edges!
+          return d.id % 2 === 0 ? 55 : width - 55
+        }
       })
-      .strength(settings.gravityStrengthX || 0.15)
+      .strength(d => {
+        if (window.__activeSubTeamFilter && window.__activeSubTeamFilter !== 'all' && d.subTeam !== window.__activeSubTeamFilter) {
+          // Pull scattered nodes strongly to the boundaries
+          return 0.28
+        }
+        return settings.gravityStrengthX || 0.15
+      })
     )
     .force('y', d3.forceY()
       .y(d => {
-        const teamSetting = settings.subTeamSettings[d.subTeam]
-        return teamSetting ? teamSetting.centerY : height / 2
+        if (!window.__activeSubTeamFilter || window.__activeSubTeamFilter === 'all') {
+          const teamSetting = settings.subTeamSettings[d.subTeam]
+          return teamSetting ? teamSetting.centerY : height / 2
+        } else if (d.subTeam === window.__activeSubTeamFilter) {
+          // Center selected sub-team
+          return height / 2
+        } else {
+          // Scatter non-selected sub-teams to top and bottom edges!
+          return d.id % 3 === 0 ? 55 : height - 55
+        }
       })
-      .strength(settings.gravityStrengthY || 0.15)
+      .strength(d => {
+        if (window.__activeSubTeamFilter && window.__activeSubTeamFilter !== 'all' && d.subTeam !== window.__activeSubTeamFilter) {
+          return 0.28
+        }
+        return settings.gravityStrengthY || 0.15
+      })
     )
     .force('boundary', forceBoundary(0, 0, width, height, hexRadius + 10))
 
