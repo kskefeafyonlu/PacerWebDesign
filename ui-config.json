@@ -11,9 +11,8 @@
     "teamName": "EGEPACERS",
     "logoEmoji": "🏎️",
     "navLinks": [
-      { "id": "nav-home", "label": "Home", "target": "#home" },
-      { "id": "nav-sponsors", "label": "Sponsors", "target": "#sponsors" },
-      { "id": "nav-team", "label": "Our Team", "target": "#team" }
+      { "id": "nav-roster", "label": "Team Roster", "target": "#roster" },
+      { "id": "nav-contact", "label": "Contact Us", "target": "#contact" }
     ]
   },
   "hero": {
@@ -163,12 +162,31 @@
     "toggleToSignupText": "Don't have an account? Sign up",
     "toggleToLoginText": "Already have an account? Log in"
   },
+  "contactSection": {
+    "title": "Contact Engineering",
+    "subtitle": "Establish a secure link with the EGEPACERS telemetry and sponsorship units.",
+    "emailLabel": "Sender Email",
+    "emailPlaceholder": "sponsor@domain.com",
+    "messageLabel": "Transmission Data (Message)",
+    "messagePlaceholder": "Describe partnership proposals or engineering queries...",
+    "submitButtonText": "Transmit Message",
+    "successMessage": "TRANSMISSION_SUCCESS: Message logged securely [OK]"
+  },
+  "telemetrySettings": {
+    "maxRpm": 12000,
+    "idleRpm": 900,
+    "redlineRpm": 10000,
+    "speedFactor": 28,
+    "gears": {
+      "roster": "G_1",
+      "contact": "G_2"
+    }
+  },
   "footer": {
     "copyright": "© 2026 EGEPACERS. All rights reserved.",
     "links": [
       { "label": "Privacy Policy", "url": "#privacy" },
-      { "label": "Terms of Service", "url": "#terms" },
-      { "label": "Contact Us", "url": "mailto:contact@egepacers.com" }
+      { "label": "Terms of Service", "url": "#terms" }
     ]
   }
 }

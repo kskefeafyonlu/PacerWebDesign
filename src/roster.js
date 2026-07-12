@@ -1,5 +1,8 @@
 import * as d3 from 'd3'
 
+let activeSimulation = null
+
+
 /**
  * Initializes and starts the D3 force-directed roster simulation
  * @param {HTMLElement} container - The container div to render the SVG in
@@ -72,8 +75,11 @@ export function initRosterSimulation(container, members, settings) {
 
   // Define force simulation
   const simulation = d3.forceSimulation(members)
+    .velocityDecay(0.65) // Add damping to reduce shivering and settle nodes quickly
     .force('charge', d3.forceManyBody().strength(settings.chargeStrength || -250))
-    .force('collide', d3.forceCollide().radius(settings.collisionRadius || 45).iterations(2))
+    .force('collide', d3.forceCollide().radius(settings.collisionRadius || 45).iterations(1))
+  
+  activeSimulation = simulation
     // Gravity clusters based on subTeam centers defined in config
     .force('x', d3.forceX()
       .x(d => {
@@ -152,6 +158,7 @@ export function initRosterSimulation(container, members, settings) {
     group.append('polygon')
       .attr('points', hexPointsString)
       .attr('fill', 'transparent')
+      .attr('class', 'mouse-target')
       .style('cursor', 'pointer')
   })
 
@@ -160,10 +167,11 @@ export function initRosterSimulation(container, members, settings) {
     const node = d3.select(this)
     const teamSetting = settings.subTeamSettings[d.subTeam] || { color: '#ffffff' }
 
-    // Visual feedback - scale up slightly
-    node.transition()
-      .duration(200)
-      .attr('transform', `translate(${d.x}, ${d.y}) scale(1.15)`)
+    // Visual feedback - scale up inner elements (avoiding transform clash on group coordinates)
+    node.selectAll('polygon:not(.mouse-target), image, text')
+      .transition()
+      .duration(150)
+      .attr('transform', 'scale(1.15)')
 
     node.select('.node-hex-bg')
       .attr('stroke-width', 4.0)
@@ -209,10 +217,11 @@ export function initRosterSimulation(container, members, settings) {
   nodeGroups.on('mouseleave', function(event, d) {
     const node = d3.select(this)
     
-    // Reset visual feedback
-    node.transition()
-      .duration(200)
-      .attr('transform', `translate(${d.x}, ${d.y}) scale(1)`)
+    // Reset visual feedback of inner elements
+    node.selectAll('polygon:not(.mouse-target), image, text')
+      .transition()
+      .duration(150)
+      .attr('transform', 'scale(1)')
 
     node.select('.node-hex-bg')
       .attr('stroke-width', 2.5)
@@ -223,6 +232,37 @@ export function initRosterSimulation(container, members, settings) {
   // Update simulation coordinates on ticks
   simulation.on('tick', () => {
     nodeGroups.attr('transform', d => `translate(${d.x}, ${d.y})`)
+  })
+
+  // Mouse-driven G-Force simulation
+  let lastMouseX = null
+  let lastMouseY = null
+  d3Svg.on('mousemove', function(event) {
+    const [mouseX, mouseY] = d3.pointer(event)
+    if (lastMouseX !== null && lastMouseY !== null) {
+      const dx = mouseX - lastMouseX
+      const dy = mouseY - lastMouseY
+      const mouseSpeed = Math.sqrt(dx*dx + dy*dy)
+      
+      if (mouseSpeed > 4) {
+        members.forEach(node => {
+          const distToMouse = Math.sqrt((node.x - mouseX)**2 + (node.y - mouseY)**2)
+          const influence = Math.max(0.05, 1 - distToMouse / 500)
+          node.vx += dx * 0.02 * influence
+          node.vy += dy * 0.02 * influence
+        })
+        
+        simulation.alphaTarget(0.15)
+        simulation.alpha(0.3).restart()
+        
+        clearTimeout(window.__gForceTimeout)
+        window.__gForceTimeout = setTimeout(() => {
+          simulation.alphaTarget(0)
+        }, 300)
+      }
+    }
+    lastMouseX = mouseX
+    lastMouseY = mouseY
   })
 
   // D3 Drag Handlers
@@ -279,4 +319,27 @@ export function initRosterSimulation(container, members, settings) {
     force.initialize = (_) => nodes = _
     return force
   }
+}
+
+/**
+ * Updates the D3 simulation forces from external tuning inputs
+ * @param {object} newSettings 
+ */
+export function updateRosterPhysics(newSettings) {
+  if (!activeSimulation) return
+
+  if (newSettings.chargeStrength !== undefined) {
+    activeSimulation.force('charge').strength(newSettings.chargeStrength)
+  }
+  if (newSettings.collisionRadius !== undefined) {
+    activeSimulation.force('collide').radius(newSettings.collisionRadius)
+  }
+  if (newSettings.gravityStrengthX !== undefined) {
+    activeSimulation.force('x').strength(newSettings.gravityStrengthX)
+  }
+  if (newSettings.gravityStrengthY !== undefined) {
+    activeSimulation.force('y').strength(newSettings.gravityStrengthY)
+  }
+
+  activeSimulation.alpha(0.3).restart()
 }

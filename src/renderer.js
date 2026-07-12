@@ -1,5 +1,7 @@
 import { signIn, signUp, signOut, isSupabaseConfigured } from './auth'
-import { initRosterSimulation } from './roster'
+import { initRosterSimulation, updateRosterPhysics } from './roster'
+import { initScrollTelemetry } from './scroll'
+
 
 
 /**
@@ -35,6 +37,14 @@ function renderHeader(headerConfig, user) {
   const logoContainer = document.createElement('div')
   logoContainer.className = 'header-logo'
   logoContainer.innerHTML = `<span class="logo-emoji">${headerConfig.logoEmoji}</span> <span class="logo-text">${headerConfig.teamName}</span>`
+  
+  logoContainer.style.cursor = 'pointer'
+  logoContainer.addEventListener('click', () => {
+    if (window.switchView) {
+      window.__activeView = 'roster'
+      window.switchView('roster')
+    }
+  })
   header.appendChild(logoContainer)
 
   const nav = document.createElement('nav')
@@ -49,6 +59,20 @@ function renderHeader(headerConfig, user) {
     a.id = link.id
     a.href = link.target
     a.textContent = link.label
+    
+    const viewName = link.target.replace('#', '')
+    if (window.__activeView === viewName) {
+      a.className = 'active'
+    }
+
+    a.addEventListener('click', (e) => {
+      e.preventDefault()
+      if (window.switchView) {
+        window.__activeView = viewName
+        window.switchView(viewName)
+      }
+    })
+
     li.appendChild(a)
     navList.appendChild(li)
   })
@@ -227,6 +251,199 @@ function renderTeam(teamConfig) {
   
   section.appendChild(canvasContainer)
   return section
+}
+
+/**
+ * Renders the Contact form Component
+ * @param {object} contactConfig 
+ */
+function renderContact(contactConfig) {
+  const section = document.createElement('section')
+  section.id = 'contact'
+  section.className = 'contact-section'
+
+  const header = document.createElement('div')
+  header.className = 'section-header'
+  
+  const title = document.createElement('h2')
+  title.textContent = contactConfig.title
+  
+  const subtitle = document.createElement('p')
+  subtitle.className = 'section-subtitle'
+  subtitle.textContent = contactConfig.subtitle
+  
+  header.appendChild(title)
+  header.appendChild(subtitle)
+  section.appendChild(header)
+
+  const formContainer = document.createElement('div')
+  formContainer.className = 'contact-form-container'
+
+  const statusMsg = document.createElement('div')
+  statusMsg.className = 'contact-status'
+  formContainer.appendChild(statusMsg)
+
+  const form = document.createElement('form')
+  form.id = 'contact-form'
+
+  const emailGroup = document.createElement('div')
+  emailGroup.className = 'form-group'
+  emailGroup.innerHTML = `
+    <label for="contact-email">${contactConfig.emailLabel}</label>
+    <input type="email" id="contact-email" placeholder="${contactConfig.emailPlaceholder}" required>
+  `
+  form.appendChild(emailGroup)
+
+  const msgGroup = document.createElement('div')
+  msgGroup.className = 'form-group'
+  msgGroup.innerHTML = `
+    <label for="contact-message">${contactConfig.messageLabel}</label>
+    <textarea id="contact-message" placeholder="${contactConfig.messagePlaceholder}" rows="5" required></textarea>
+  `
+  form.appendChild(msgGroup)
+
+  const submitBtn = document.createElement('button')
+  submitBtn.type = 'submit'
+  submitBtn.className = 'btn btn-primary btn-block'
+  submitBtn.textContent = contactConfig.submitButtonText
+  form.appendChild(submitBtn)
+
+  formContainer.appendChild(form)
+  section.appendChild(formContainer)
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault()
+    submitBtn.disabled = true
+    submitBtn.textContent = 'Transmitting...'
+    
+    // Simulate radio transmission delay
+    setTimeout(() => {
+      statusMsg.className = 'contact-status status-success'
+      statusMsg.textContent = contactConfig.successMessage
+      form.reset()
+      submitBtn.disabled = false
+      submitBtn.textContent = contactConfig.submitButtonText
+      
+      setTimeout(() => {
+        statusMsg.className = 'contact-status'
+        statusMsg.textContent = ''
+      }, 3000)
+    }, 1000)
+  })
+
+  return section
+}
+
+/**
+ * Renders the ECU Physics Tuner overlay panel
+ * @param {object} rosterSettings 
+ */
+function renderEcuTuner(rosterSettings) {
+  const panel = document.createElement('div')
+  panel.id = 'ecu-tuner'
+  panel.className = 'ecu-tuner'
+
+  const toggleBtn = document.createElement('button')
+  toggleBtn.className = 'ecu-tuner-toggle'
+  toggleBtn.innerHTML = '⚡ ECU_CONFIG'
+  panel.appendChild(toggleBtn)
+
+  const content = document.createElement('div')
+  content.className = 'ecu-tuner-content'
+  content.style.display = 'none'
+
+  const header = document.createElement('div')
+  header.className = 'ecu-tuner-header'
+  header.innerHTML = `
+    <span class="ecu-title">// SYSTEM ECU TUNING</span>
+    <span class="ecu-subtitle">Adjust core D3 physics fields in real-time</span>
+  `
+  content.appendChild(header)
+
+  const params = [
+    { id: 'charge', label: 'CHARGE_STR (Repulsion)', min: -600, max: -50, val: rosterSettings.chargeStrength || -280, unit: 'N' },
+    { id: 'collide', label: 'COLL_RAD (Node Buffer)', min: 20, max: 100, val: rosterSettings.collisionRadius || 50, unit: 'px' },
+    { id: 'gravityX', label: 'GRAV_X (Subteam X-Pull)', min: 0, max: 0.5, step: 0.01, val: rosterSettings.gravityStrengthX || 0.15, unit: 'm/s²' },
+    { id: 'gravityY', label: 'GRAV_Y (Subteam Y-Pull)', min: 0, max: 0.5, step: 0.01, val: rosterSettings.gravityStrengthY || 0.15, unit: 'm/s²' }
+  ]
+
+  const slidersContainer = document.createElement('div')
+  slidersContainer.className = 'ecu-sliders'
+
+  params.forEach(param => {
+    const group = document.createElement('div')
+    group.className = 'ecu-group'
+    group.innerHTML = `
+      <div class="ecu-label-row">
+        <span class="ecu-slider-label">${param.label}</span>
+        <span id="ecu-val-${param.id}" class="ecu-slider-val">${param.val} ${param.unit}</span>
+      </div>
+      <input type="range" id="ecu-range-${param.id}" class="ecu-range" min="${param.min}" max="${param.max}" step="${param.step || 1}" value="${param.val}">
+    `
+    slidersContainer.appendChild(group)
+  })
+  content.appendChild(slidersContainer)
+  panel.appendChild(content)
+
+  toggleBtn.addEventListener('click', () => {
+    const isOpen = content.style.display === 'block'
+    content.style.display = isOpen ? 'none' : 'block'
+    toggleBtn.classList.toggle('active')
+  })
+
+  // Hook up event listeners after a brief timeout to let DOM render
+  setTimeout(() => {
+    const chargeInput = document.getElementById('ecu-range-charge')
+    const collideInput = document.getElementById('ecu-range-collide')
+    const gravityXInput = document.getElementById('ecu-range-gravityX')
+    const gravityYInput = document.getElementById('ecu-range-gravityY')
+
+    const updateValLabel = (id, val, unit) => {
+      const label = document.getElementById(`ecu-val-${id}`)
+      if (label) label.textContent = `${val} ${unit}`
+    }
+
+    const triggerPhysicsUpdate = () => {
+      const charge = parseInt(chargeInput.value)
+      const collide = parseInt(collideInput.value)
+      const gravityX = parseFloat(gravityXInput.value)
+      const gravityY = parseFloat(gravityYInput.value)
+
+      updateRosterPhysics({
+        chargeStrength: charge,
+        collisionRadius: collide,
+        gravityStrengthX: gravityX,
+        gravityStrengthY: gravityY
+      })
+    }
+
+    if (chargeInput) {
+      chargeInput.addEventListener('input', (e) => {
+        updateValLabel('charge', e.target.value, 'N')
+        triggerPhysicsUpdate()
+      })
+    }
+    if (collideInput) {
+      collideInput.addEventListener('input', (e) => {
+        updateValLabel('collide', e.target.value, 'px')
+        triggerPhysicsUpdate()
+      })
+    }
+    if (gravityXInput) {
+      gravityXInput.addEventListener('input', (e) => {
+        updateValLabel('gravityX', e.target.value, 'm/s²')
+        triggerPhysicsUpdate()
+      })
+    }
+    if (gravityYInput) {
+      gravityYInput.addEventListener('input', (e) => {
+        updateValLabel('gravityY', e.target.value, 'm/s²')
+        triggerPhysicsUpdate()
+      })
+    }
+  }, 100)
+
+  return panel
 }
 
 /**
@@ -441,8 +658,10 @@ function renderDevNotice() {
  * @param {any} user 
  */
 export function renderApp(config, user) {
-  // Store config globally for modal reuse
   window.__uiConfig = config
+  if (!window.__activeView) {
+    window.__activeView = 'roster'
+  }
 
   // 1. Reset #app container
   const appContainer = document.getElementById('app')
@@ -451,21 +670,60 @@ export function renderApp(config, user) {
   // 2. Apply dynamic colors & layout tokens
   applyTheme(config.theme)
 
-  // 3. Render and append only the team roster section
+  // 3. Render and append header
+  const header = renderHeader(config.header, user)
+  appContainer.appendChild(header)
+
+  // 4. Create the main viewport container
   const main = document.createElement('main')
   main.className = 'main-content single-view'
-  
-  const team = renderTeam(config.teamSection)
-  main.appendChild(team)
-  
+  main.id = 'page-viewport'
   appContainer.appendChild(main)
 
-  // Initialize interactive roster simulation
-  const canvasElement = document.getElementById('roster-canvas')
-  if (canvasElement) {
-    initRosterSimulation(canvasElement, config.teamSection.members, config.teamSection.rosterSettings)
+  // 5. Render and append footer
+  const footer = renderFooter(config.footer)
+  appContainer.appendChild(footer)
+
+  // Router View Switcher
+  window.switchView = function(viewName) {
+    // Clear viewport
+    main.innerHTML = ''
+
+    // Render subview
+    if (viewName === 'roster') {
+      const team = renderTeam(config.teamSection)
+      main.appendChild(team)
+
+      // Append ECU physics tuner to main
+      const tuner = renderEcuTuner(config.teamSection.rosterSettings)
+      main.appendChild(tuner)
+
+      const canvasElement = document.getElementById('roster-canvas')
+      if (canvasElement) {
+        initRosterSimulation(canvasElement, config.teamSection.members, config.teamSection.rosterSettings)
+      }
+    } else if (viewName === 'contact') {
+      const contact = renderContact(config.contactSection)
+      main.appendChild(contact)
+    }
+
+    // Update active nav links styling
+    document.querySelectorAll('.header-nav a').forEach(a => {
+      const targetView = a.getAttribute('href').replace('#', '')
+      if (targetView === viewName) {
+        a.classList.add('active')
+      } else {
+        a.classList.remove('active')
+      }
+    })
   }
 
-  // 4. Render development warning helper if needed (if supabase keys missing)
+  // Initial trigger
+  window.switchView(window.__activeView)
+
+  // 6. Initialize scroll telemetry (Tachometer scrollbar)
+  initScrollTelemetry()
+
+  // 7. Render development warning helper if needed (if supabase keys missing)
   renderDevNotice()
 }
