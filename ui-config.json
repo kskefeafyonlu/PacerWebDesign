@@ -315,9 +315,9 @@
         "name": "PACER INTERNATIONAL SPEEDWAY (MAP_A)",
         "pathD": "M 30 75 C 30 20, 120 20, 180 50 C 240 80, 300 80, 350 50 C 380 30, 380 120, 300 120 C 220 120, 180 130, 120 110 C 60 90, 30 110, 30 75 Z",
         "speeds": {
-          "endurance": 1.5,
-          "qualifying": 3.4,
-          "wet": 0.65
+          "endurance": 0.7,
+          "qualifying": 1.4,
+          "wet": 0.35
         },
         "simulationData": {
           "endurance": {
@@ -345,9 +345,9 @@
         "name": "EGE RING GP CIRCUIT (MAP_B)",
         "pathD": "M 40 90 L 120 40 L 220 40 L 260 90 L 320 50 C 370 70, 370 110, 320 130 L 280 110 C 230 150, 150 150, 100 130 C 50 110, 30 110, 40 90 Z",
         "speeds": {
-          "endurance": 1.2,
-          "qualifying": 2.8,
-          "wet": 0.5
+          "endurance": 0.55,
+          "qualifying": 1.1,
+          "wet": 0.28
         },
         "simulationData": {
           "endurance": {

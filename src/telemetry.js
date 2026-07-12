@@ -503,8 +503,8 @@ export function initTrackSimulator(container) {
       cosTheta = Math.max(-1, Math.min(1, cosTheta))
       const turnAngle = Math.acos(cosTheta)
 
-      // Braking coefficient: slow down up to 80% during sharp direction changes (strong corner deceleration physics)
-      const brakingCoeff = Math.max(0.20, 1.0 - turnAngle * 4.2)
+      // Braking coefficient: slow down up to 38% during sharp direction changes (smooth, realistic cornering physics)
+      const brakingCoeff = Math.max(0.62, 1.0 - turnAngle * 1.8)
       const speedFactor = baseSpeed * brakingCoeff
 
       // Map speed in m/s based on ECU mode + braking dynamics for digital display
