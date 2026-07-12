@@ -1,0 +1,121 @@
+{
+  "theme": {
+    "primaryColor": "220 90% 56%",
+    "backgroundColor": "224 71% 4%",
+    "textColor": "210 40% 98%",
+    "cardBgColor": "224 71% 7%",
+    "borderColor": "220 14% 16%",
+    "glassmorphism": true
+  },
+  "header": {
+    "teamName": "EGEPACERS",
+    "logoEmoji": "🏎️",
+    "navLinks": [
+      { "id": "nav-home", "label": "Home", "target": "#home" },
+      { "id": "nav-sponsors", "label": "Sponsors", "target": "#sponsors" },
+      { "id": "nav-team", "label": "Our Team", "target": "#team" }
+    ]
+  },
+  "hero": {
+    "title": "Welcome to EGEPACERS",
+    "subtitle": "Pushing the limits of racing engineering. Join us on our journey to the podium.",
+    "ctaText": "Become a Sponsor",
+    "ctaTarget": "#sponsors",
+    "bgGradientStart": "hsla(220, 90%, 56%, 0.15)",
+    "bgGradientEnd": "transparent"
+  },
+  "sponsorsSection": {
+    "title": "Our Sponsors",
+    "subtitle": "We are proud to partner with these organizations. Their support makes our engineering and racing dreams possible.",
+    "tiers": [
+      {
+        "name": "Platinum",
+        "badgeColor": "#e5e7eb",
+        "textColor": "#1f2937"
+      },
+      {
+        "name": "Gold",
+        "badgeColor": "#fef08a",
+        "textColor": "#854d0e"
+      },
+      {
+        "name": "Silver",
+        "badgeColor": "#e2e8f0",
+        "textColor": "#475569"
+      }
+    ],
+    "sponsors": [
+      {
+        "name": "Example Sponsor A",
+        "tier": "Platinum",
+        "description": "Providing high-performance components and testing facilities.",
+        "logoPlaceholderText": "ESA",
+        "websiteUrl": "https://example.com/sponsor-a"
+      },
+      {
+        "name": "Example Sponsor B",
+        "tier": "Gold",
+        "description": "Leading manufacturer of custom engineering solutions.",
+        "logoPlaceholderText": "ESB",
+        "websiteUrl": "https://example.com/sponsor-b"
+      },
+      {
+        "name": "Example Sponsor C",
+        "tier": "Silver",
+        "description": "Supporting logistics, travel, and student development.",
+        "logoPlaceholderText": "ESC",
+        "websiteUrl": "https://example.com/sponsor-c"
+      }
+    ]
+  },
+  "teamSection": {
+    "title": "Meet the Team",
+    "subtitle": "The dedicated students and engineers designing the future of racing.",
+    "members": [
+      {
+        "name": "Alex Mercer",
+        "role": "Team Captain & Chassis Lead",
+        "bio": "Mechanical engineering senior focused on structural optimization.",
+        "avatarEmoji": "👤",
+        "github": "https://github.com",
+        "linkedin": "https://linkedin.com"
+      },
+      {
+        "name": "Sarah Chen",
+        "role": "Aerodynamics Lead",
+        "bio": "Aerospace engineer designing active wing profiles and airflow CFD.",
+        "avatarEmoji": "👤",
+        "github": "https://github.com",
+        "linkedin": "https://linkedin.com"
+      },
+      {
+        "name": "David Miller",
+        "role": "Electronics & Telemetry Lead",
+        "bio": "Computer engineer building live dashboard telematics systems.",
+        "avatarEmoji": "👤",
+        "github": "https://github.com",
+        "linkedin": "https://linkedin.com"
+      }
+    ]
+  },
+  "authUi": {
+    "loginTitle": "Sponsor Portal",
+    "loginSubtitle": "Log in to access sponsorship tier details and engineering blueprints.",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "you@example.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "••••••••",
+    "loginButtonText": "Sign In",
+    "signupButtonText": "Create Account",
+    "toggleToSignupText": "Don't have an account? Sign up",
+    "toggleToLoginText": "Already have an account? Log in"
+  },
+  "footer": {
+    "copyright": "© 2026 EGEPACERS. All rights reserved.",
+    "links": [
+      { "label": "Privacy Policy", "url": "#privacy" },
+      { "label": "Terms of Service", "url": "#terms" },
+      { "label": "Contact Us", "url": "mailto:contact@egepacers.com" }
+    ]
+  }
+}
