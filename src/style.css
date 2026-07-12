@@ -1101,7 +1101,7 @@ body.mode-qualifying .node-group {
 
 /* Telemetry Ticker styles */
 .telemetry-ticker-wrapper {
-  background-color: rgba(18, 18, 18, 0.9);
+  background-color: hsla(var(--color-bg), 0.7);
   border-bottom: 1px solid hsl(var(--color-border));
   padding: 8px 24px;
   font-family: 'Space Mono', monospace;
